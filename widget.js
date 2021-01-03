@@ -1,4 +1,5 @@
-<div class="D(f) W(100%) BdT Bdtc($c-divider) Bgc(#fff) Pos(r)" style="
+function getWidget() {
+return `<div class="D(f) W(100%) BdT Bdtc($c-divider) Bgc(#fff) Pos(r)" style="
     width: 100%;
     height: 60px;
     padding: 17px;
@@ -110,4 +111,5 @@
             background: linear-gradient(262deg, #aefd7c, #02C39A);
         }
     </style>
-</div>
+</div>`;
+}

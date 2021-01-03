@@ -13,9 +13,10 @@
       "matches": ["https://tinder.com/*"],
       "all_frames": false,
       "run_at": "document_end",
-      "js": ["jquery.js", "datapal.js"]
+      "js": ["datepal.js", "widget.js"]
     }
  ],
+ "web_accessible_resources": ["datapal.html"],
   "page_action": {
     "default_popup": "popup.html",
     "default_icon": {
