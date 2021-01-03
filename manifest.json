@@ -1,8 +1,8 @@
 {
-  "name": "Getting Started Example",
+  "name": "DatePal",
   "version": "1.0",
-  "description": "Build an Extension!",
-  "permissions": ["activeTab", "declarativeContent", "storage"],
+  "description": "DatePal is your little dating helper",
+  "permissions": ["activeTab", "storage"],
   "options_page": "options.html",
   "background": {
     "scripts": ["background.js"],
