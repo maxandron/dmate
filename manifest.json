@@ -1,8 +1,12 @@
 {
   "name": "DatePal",
-  "version": "1.0",
+  "version": "0.0.1",
   "description": "DatePal is your little dating helper",
-  "permissions": ["activeTab", "storage"],
+  "permissions": [
+      "https://api.openai.com/v1/engines/davinci/completions",
+      "activeTab",
+      "storage"
+  ],
   "options_page": "options.html",
   "background": {
     "scripts": ["background.js"],
