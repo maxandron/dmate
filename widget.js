@@ -79,7 +79,8 @@ return `
             }
         }
     </style>
-    <span class="" style="
+
+    <span style="
     background-color: #fd5068;
     margin-right: 6px;
     border-radius: 5px;
@@ -91,10 +92,10 @@ return `
 ">Datepal:</span>
     <span style="
     margin-top: 5px;
-    display: none;
 ">I would be intrested to know the real you.
     </span>
-    <div class="loading">
+
+    <div class="loading" style="display: none">
         <span>Loading</span>
     </div>
     
@@ -106,5 +107,6 @@ return `
             style="
     height: 40px;
 ">Regenerate</button></div>
+
 `;
 }
