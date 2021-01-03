@@ -1,8 +1,12 @@
 {
-  "name": "Getting Started Example",
-  "version": "1.0",
-  "description": "Build an Extension!",
-  "permissions": ["activeTab", "declarativeContent", "storage"],
+  "name": "DatePal",
+  "version": "0.0.1",
+  "description": "DatePal is your little dating helper",
+  "permissions": [
+      "https://api.openai.com/v1/engines/davinci/completions",
+      "activeTab",
+      "storage"
+  ],
   "options_page": "options.html",
   "background": {
     "scripts": ["background.js"],
