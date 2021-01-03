@@ -23,10 +23,13 @@ var waitForEl = function(callback) {
   }, 500);
 };
 
+var datepalClasses = ["datepal-wrapper", "D(f)", "W(100%)", "BdT", "Bdtc($c-divider)", "Bgc(#fff)", "Pos(r)"];
+
 waitForEl(function() {
     if(!document.getElementById("datepal")) {
         var datepal = document.createElement("div");
         datepal.id = "datepal";
+        datepalClasses.forEach(element => datepal.classList.add(element));
         datepal.innerHTML = getWidget();
         let conversation_block = getElementByXpath(conversation_block_xpath);
         insertAfter(datepal, conversation_block);
