@@ -1,27 +1,25 @@
-function getElementByXpath(path) {
-  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-}
-
-function insertAfter(newNode, referenceNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-}
-
-let conversation_block_xpath = '//div[@aria-label="Conversation history"]'
+// Constants
+//  XPATHS
+const CONV_BLOCK_XPATH      = "//div[@aria-label='Conversation history']";
+const MATCH_MESSAGES_XPATH  = "//div[contains(@class, 'msgWrp') and contains(@class, 'Pstart(62px)')][divIndex]/div[1]";
+const MY_MESSAGES_XPATH     = "//div[contains(@class, 'msgWrp') and contains(@class, 'Pstart(100px)')][divIndex]/div[1]";
+const ALL_MESSAGES_XPATH    = "//div[contains(@class, 'msgWrp')][divIndex]/div[1]"
+const MESSAGE_INPUT_XPATH   = "//*[@placeholder='Type a message ...']";
 
 function isLoaded() {
-    let conversation_block = getElementByXpath(conversation_block_xpath);
+    let conversation_block = getElementByXpath(CONV_BLOCK_XPATH);
     return conversation_block != 'undefined' && conversation_block != null;
 }
 
 function getMessages(whoSent){
   if(whoSent == 'match'){
-    baseXpath = "//div[contains(@class, 'msgWrp') and contains(@class, 'Pstart(62px)')][divIndex]/div[1]"
+    baseXpath = MATCH_MESSAGES_XPATH
   }
   if(whoSent == 'me'){
-    baseXpath = "//div[contains(@class, 'msgWrp') and contains(@class, 'Pstart(100px)')][divIndex]/div[1]"
+    baseXpath = MY_MESSAGES_XPATH
   }
   if(whoSent == 'all'){
-    baseXpath = "//div[contains(@class, 'msgWrp')][divIndex]/div[1]"
+    baseXpath = ALL_MESSAGES_XPATH
   }
   
   var currentMessageBlock = true;
@@ -54,8 +52,45 @@ function orderMessages(myMessages, allMessages){
       orderedMessages.push({"Match": entry});
     }
   });
-  
+
   return orderedMessages;
+}
+
+function injectDatepalWidget(){
+  var datepal = document.createElement("div");
+  datepal.id = "datepal";
+  datepalClasses.forEach(element => datepal.classList.add(element));
+  datepal.innerHTML = getWidget();
+  let conversation_block = getElementByXpath(CONV_BLOCK_XPATH);
+  insertAfter(datepal, conversation_block);
+}
+
+function getConversationMessage(){
+  var myMessages = getMessages("me");
+  var allMessages = getMessages("all");
+  var orderedMessages = orderMessages(myMessages, allMessages);
+  return orderedMessages;
+}
+
+function getNewIdeaClick(){
+  document.getElementById('loader-text').style.display = "None";
+  document.getElementById('datepal-suggestion').style.display = "inline-block";
+}
+
+function sendClick(){
+  var selectedIdea = document.getElementById('datepal-suggestion').innerText;
+  var inputField = getElementByXpath(MESSAGE_INPUT_XPATH);
+  inputField.value = selectedIdea;
+}
+
+function mainFlow(){
+  injectDatepalWidget();
+
+  setTimeout(function() {
+    var messages = getConversationMessage();
+    console.log(messages);
+  }, 2000);
+
 }
 
 var waitForEl = function(callback) {
@@ -72,21 +107,19 @@ var datepalClasses = ["datepal-wrapper", "D(f)", "W(100%)", "BdT", "Bdtc($c-divi
 
 waitForEl(function() {
     if(!document.getElementById("datepal")) {
-        var datepal = document.createElement("div");
-        datepal.id = "datepal";
-        datepalClasses.forEach(element => datepal.classList.add(element));
-        datepal.innerHTML = getWidget();
-        let conversation_block = getElementByXpath(conversation_block_xpath);
-        insertAfter(datepal, conversation_block);
+      mainFlow();
 
-        setTimeout(function() {
-          var myMessages = getMessages("me");
-          // var matchMessages = getMessages("match");
-          var allMessages = getMessages("all");
-          var orderedMessages = orderMessages(myMessages, allMessages);
-          console.log(orderedMessages);
-        }, 2000);
-        
+      // Send button was clicked
+      document.getElementById('datepal-send-button').onclick = function(){
+        sendClick();
+      };
+      // New idea button was clicked
+      document.getElementById('datepal-new-idea').onclick = function(){
+        getNewIdeaClick();
+      };
+
     }
 });
+
+
 

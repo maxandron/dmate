@@ -1,23 +1,11 @@
 function getWidget() {
     return `
-    <style>
-        .datepal-send:hover {
-            background: linear-gradient(262deg, #aefd7c, #02C39A);
-        }
-        .datepal-wrapper{
-            width: 100%;
-            height: 60px;
-            padding: 17px;
-        }
-    </style>
-    
-
     <span class="datepal-name">Datepal:</span>
     <div style="margin-top: 5px;">
-        <span class="datepal-suggestion">
-            I would be intrested to know the real you.
+        <span id="datepal-suggestion">
+            You look very interesting...
         </span>
-        <div class="loader-text"></div>
+        <div id="loader-text"></div>
     </div>
 
     <style>
@@ -32,15 +20,15 @@ function getWidget() {
         text-transform: uppercase;
     }
 
-    .datepal-suggestion{
+    #datepal-suggestion{
         display: none;
     }
 
-    .loader-text{
+    #loader-text{
         display: inline-block;
     }
     
-    .loader-text:after {
+    #loader-text:after {
         content: 'Thinking';
         animation: load 2s linear infinite;
     }
@@ -57,17 +45,26 @@ function getWidget() {
         100% {
         content: 'Thinking...';
         }
-}
+    }
     </style>
     
-    <div class="CenterAlign Pos(r) W(100%) Fxs(0) Z(1) Fz($xs) Bgc($c-bg) Fw($semibold) Cur(p) BdT Bdc($c-divider) C($c-secondary)"
-        style="height: 40px;position: absolute;right: 28px;bottom: 9px;width: 212px;"><button
-            class="datepal-send H(72px) Tt(u) Lts($ls-m) StyledButton Bg($datepal-send-gradient):h::b C(#fff):h Fw($semibold) BdEnd Bdc($c-divider) W(50%) focus-button-style datepal-send"
-            style="height: 40px;">Send</button>
-            <button class="H(72px) W(50%) Tt(u) Lts($ls-m) StyledButton Bg($primary-gradient):h::b C(#fff):h Fw($semibold) focus-button-style"
-            style="
-    height: 40px;
-">Regenerate</button></div>
+    <div class="CenterAlign Pos(r) W(100%) Fxs(0) Z(1) Fz($xs) Bgc($c-bg) Fw($semibold) Cur(p) BdT Bdc($c-divider) C($c-secondary)" style="height: 40px;position: absolute;right: 28px;bottom: 9px;width: 212px;">
+        <button id="datepal-send-button" class="datepal-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($datepal-send-gradient):h::b C(#fff):h Fw($semibold) BdEnd Bdc($c-divider) W(50%) focus-button-style">Send</button>
+        <button id="datepal-new-idea" class="datepal-buttons H(72px) W(50%) Tt(u) Lts($ls-m) StyledButton Bg($primary-gradient):h::b C(#fff):h Fw($semibold) focus-button-style">New Idea</button>
+    </div>
 
+    <style>
+        #datepal-send-button:hover {
+            background: linear-gradient(262deg, #aefd7c, #02C39A);
+        }
+        .datepal-buttons{
+            height: 40px;
+        }
+        .datepal-wrapper{
+            width: 100%;
+            height: 60px;
+            padding: 17px;
+        }
+    </style>
 `;
 }

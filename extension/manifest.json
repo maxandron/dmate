@@ -17,7 +17,7 @@
       "matches": ["https://tinder.com/*"],
       "all_frames": false,
       "run_at": "document_end",
-      "js": ["datepal.js", "widget.js"]
+      "js": ["widget.js", "helpers.js", "datepal.js"]
     }
  ],
  "web_accessible_resources": ["datapal.html"],
