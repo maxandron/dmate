@@ -1,6 +1,6 @@
 function getWidget() {
-return `
-<style>
+    return `
+    <style>
         .datepal-send:hover {
             background: linear-gradient(262deg, #aefd7c, #02C39A);
         }
@@ -9,95 +9,56 @@ return `
             height: 60px;
             padding: 17px;
         }
-        .loading span {
-
-            z-index: 999;
-            color: #fff;
-            position: relative;
-            left: 100px;
-        }
-
-        .loading:before {
-            content: '';
-            background: #61bdb6;
-            width: 128px;
-            height: 36px;
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            margin: auto;
-
-            animation: 2s loadingBefore infinite ease-in-out;
-        }
-
-        @keyframes loadingBefore {
-            0% {
-                transform: translateX(-14px);
-            }
-
-            50% {
-                transform: translateX(14px);
-            }
-
-            100% {
-                transform: translateX(-14px);
-            }
-        }
-
-
-        .loading:after {
-            content: '';
-            background: #ff3600;
-            width: 14px;
-            height: 60px;
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            margin: auto;
-            opacity: .5;
-
-            animation: 2s loadingAfter infinite ease-in-out;
-        }
-
-        @keyframes loadingAfter {
-            0% {
-                transform: translateX(-50px);
-            }
-
-            50% {
-                transform: translateX(50px);
-            }
-
-            100% {
-                transform: translateX(-50px);
-            }
-        }
     </style>
+    
 
-    <span style="
-    background-color: #fd5068;
-    margin-right: 6px;
-    border-radius: 5px;
-    color: #fff;
-    padding:4px 12px;
-    height: 28px;
-    display:inline-block;
-    text-transform: uppercase;
-">Datepal:</span>
-    <span style="
-    margin-top: 5px;
-">I would be intrested to know the real you.
-    </span>
-
-    <div class="loading" style="display: none">
-        <span>Loading</span>
+    <span class="datepal-name">Datepal:</span>
+    <div style="margin-top: 5px;">
+        <span class="datepal-suggestion">
+            I would be intrested to know the real you.
+        </span>
+        <div class="loader-text"></div>
     </div>
+
+    <style>
+    .datepal-name{
+        background-color: #fd5068;
+        margin-right: 6px;
+        border-radius: 5px;
+        color: #fff;
+        padding:4px 12px;
+        height: 28px;
+        display:inline-block;
+        text-transform: uppercase;
+    }
+
+    .datepal-suggestion{
+        display: none;
+    }
+
+    .loader-text{
+        display: inline-block;
+    }
+    
+    .loader-text:after {
+        content: 'Thinking';
+        animation: load 2s linear infinite;
+    }
+    @keyframes load {
+        0% {
+        content: 'Thinking';
+        }
+        33% {
+        content: 'Thinking.';
+        }
+        67% {
+        content: 'Thinking..';
+        }
+        100% {
+        content: 'Thinking...';
+        }
+}
+    </style>
     
     <div class="CenterAlign Pos(r) W(100%) Fxs(0) Z(1) Fz($xs) Bgc($c-bg) Fw($semibold) Cur(p) BdT Bdc($c-divider) C($c-secondary)"
         style="height: 40px;position: absolute;right: 28px;bottom: 9px;width: 212px;"><button
