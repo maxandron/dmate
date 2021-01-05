@@ -47,7 +47,7 @@ function orderMessages(myMessages, allMessages){
   allMessages.forEach(function(entry) {
     
     if(myMessages.includes(entry)){
-      orderedMessages.push({"Me": entry});
+      orderedMessages.push({"User": entry});
     } else{
       orderedMessages.push({"Match": entry});
     }
@@ -83,19 +83,28 @@ function sendClick(){
   inputField.value = selectedIdea;
 }
 
+function consoleLogMessage(messages) {
+  var messagesString = '';
+  messages.forEach(function(entry) {
+     var entry = Object.entries(entry);
+      messagesString += entry[0][0] + ': ' + entry[0][1] + '\n';
+  });
+  console.log(messagesString);
+}
+
 function mainFlow(){
   injectDatepalWidget();
 
   setTimeout(function() {
     var messages = getConversationMessage();
-    console.log(messages);
+    consoleLogMessage(messages);
+//    console.log(messages);
   }, 2000);
 
 }
 
 var waitForEl = function(callback) {
   if (isLoaded()) {
-    console.log('loaded!');
     callback();
   }
   setTimeout(function() {
