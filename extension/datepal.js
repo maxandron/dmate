@@ -75,6 +75,19 @@ function getConversationMessage(){
 function getNewIdeaClick(){
   document.getElementById('loader-text').style.display = "None";
   document.getElementById('datepal-suggestion').style.display = "inline-block";
+  var messages = {'input': getConversationMessage()};
+  var http = new XMLHttpRequest();
+  let url = 'https://5d34dd7278.execute-api.us-east-2.amazonaws.com/default/datepal-api';
+  http.open('POST', url, true);
+  http.setRequestHeader('Content-type', 'application/json');
+  http.onreadystatechange = function() {
+      if(http.readyState == 4 && http.status == 200) {
+          console.log(http.responseText);
+      } else {
+          console.log('wtf http request failed');
+      }
+   }
+  http.send(JSON.stringify(messages));
 }
 
 function sendClick(){
@@ -98,7 +111,6 @@ function mainFlow(){
   setTimeout(function() {
     var messages = getConversationMessage();
     consoleLogMessage(messages);
-//    console.log(messages);
   }, 2000);
 
 }

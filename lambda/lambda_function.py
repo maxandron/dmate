@@ -20,23 +20,23 @@ def respond(err, res=None):
 def lambda_handler(event, context):
     print("Body :" + json.dumps(event["body"]))
 
-    if json.loads(event["body"])["input"] != "testing":
-        return respond(ValueError("wtf"))
+    messages = ''
+    for message_dict in json.loads(event['body']['input']):
+        sender, message = message_dict.items()[0]
+
 
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
-    start_sequence = "\nMe:"
-    restart_sequence = "\nMatch: "
-    prompt = "The following is a conversation between me and a match. The me is flirty, clever, and kind.\nMe: Hi\nMatch: Hi\n"
-
+    prompt = 'The following is a conversation between a user and a match. The user is flirty, easygoing, clever, mysterious, and kind. The goal of the user is to get a date with the match without being too pushy.\n###\n{}\n\nGenerate 5 clever responses the user may give:\n\n1.'
     response = openai.Completion.create(
-        engine="davinci",
+        engine="instruct-davinci-beta",
         prompt=prompt,
-        temperature=0.9,
-        max_tokens=100,
+        temperature=0.6,
+        max_tokens=64,
         top_p=1,
-        presence_penalty=0.6,
-        stop=["\n", "Me:", "Match:"],
+        frequency_penalty=0.59,
+        presence_penalty=0.2,
+#        stop=["\n", "User:", "Match:"],
     )
 
     """    operations = {
