@@ -2,8 +2,10 @@ import boto3
 import json
 import os
 import openai
+import re
 
-print("Loading function")
+CHOICES_REGEX = r" (.+?) ?[1-9][\.\)\-]| ?(.+?)$"
+
 # dynamo = boto3.client('dynamodb')
 
 
@@ -17,8 +19,36 @@ def respond(err, res=None):
     }
 
 
+def openai_response(prompt):
+    return openai.Completion.create(
+        engine="instruct-davinci-beta",
+        prompt=prompt,
+        temperature=0.7,
+        max_tokens=150,
+        top_p=1,
+        frequency_penalty=0.65,
+        presence_penalty=0.25,
+    )
+
+
+def extract_choices(response_text):
+    response_text = response_text.replace("\n", " ")
+    print(response_text)
+    matches = re.findall(CHOICES_REGEX, response_text)
+    return ["".join(match) for match in matches]
+
+
+def is_valid_response(choices):
+    return len("".join(choices)) >= 10
+
+
+def fetch_choices(prompt):
+    response_text = openai_response(prompt)["choices"][0]["text"]
+    return extract_choices(response_text)
+
+
 def lambda_handler(event, context):
-    print("Body :" + json.dumps(event["body"]))
+    # print("Body :" + json.dumps(event["body"]))
 
     messages = []
     for messages_dict in json.loads(event["body"])["input"]:
@@ -28,18 +58,15 @@ def lambda_handler(event, context):
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
     prompt = "The following is a conversation between a user and a match. The user is flirty, easygoing, clever, mysterious, and kind. The goal of the user is to get a date with the match without being too pushy.\n###\n{}\n\nGenerate 5 clever responses the user may give:\n\n1."
-    prompt = prompt.format('\n'.join(messages))
-    print(prompt)
-    response = openai.Completion.create(
-        engine="instruct-davinci-beta",
-        prompt=prompt,
-        temperature=0.6,
-        max_tokens=150,
-        top_p=1,
-        frequency_penalty=0.59,
-        presence_penalty=0.2,
-        #        stop=["\n", "User:", "Match:"],
-    )
+    prompt = prompt.format("\n".join(messages))
+    # print(prompt)
+
+    choices = fetch_choices(prompt)
+
+    # once in a while gpt-3 returns an empty response
+    # in that case we just try one more time
+    if not is_valid_response(choices):
+        choices = fetch_choices(prompt)
 
     """    operations = {
         'DELETE': lambda dynamo, x: dynamo.delete_item(**x),
@@ -56,4 +83,4 @@ def lambda_handler(event, context):
         return respond(ValueError('Unsupported method "{}"'.format(operation)))
     """
 
-    return respond(None, response)
+    return respond(None, choices)
