@@ -1,143 +1,138 @@
 // Constants
 //  XPATHS
-const CONV_BLOCK_XPATH      = "//div[@aria-label='Conversation history']";
-const MATCH_MESSAGES_XPATH  = "//div[contains(@class, 'msgWrp') and contains(@class, 'Pstart(62px)')][divIndex]/div[1]";
-const MY_MESSAGES_XPATH     = "//div[contains(@class, 'msgWrp') and contains(@class, 'Pstart(100px)')][divIndex]/div[1]";
-const ALL_MESSAGES_XPATH    = "//div[contains(@class, 'msgWrp')][divIndex]/div[1]"
-const MESSAGE_INPUT_XPATH   = "//*[@placeholder='Type a message ...']";
+const CONV_BLOCK_XPATH = "//div[@aria-label='Conversation history']";
+const MATCH_MESSAGES_XPATH = "//div[contains(@class, 'msgWrp') and contains(@class, 'Pstart(62px)')][divIndex]/div[1]";
+const USER_MESSAGES_XPATH = "//div[contains(@class, 'msgWrp') and contains(@class, 'Pstart(100px)')][divIndex]/div[1]";
+const ALL_MESSAGES_XPATH = "//div[contains(@class, 'msgWrp')][divIndex]/div[1]"
+const MESSAGE_INPUT_XPATH = "//*[@placeholder='Type a message ...']";
 
 function isLoaded() {
     let conversation_block = getElementByXpath(CONV_BLOCK_XPATH);
     return conversation_block != 'undefined' && conversation_block != null;
 }
 
-function getMessages(whoSent){
-  if(whoSent == 'match'){
-    baseXpath = MATCH_MESSAGES_XPATH
-  }
-  if(whoSent == 'me'){
-    baseXpath = MY_MESSAGES_XPATH
-  }
-  if(whoSent == 'all'){
-    baseXpath = ALL_MESSAGES_XPATH
-  }
-  
-  var currentMessageBlock = true;
-  var index = 1;
-  var matchMessages = [];
-
-  while(currentMessageBlock){
-    currentXpath = baseXpath.replace("divIndex", index)
-    currentMessageBlock = getElementByXpath(currentXpath);
-    if(currentMessageBlock){
-      currentMessage = getElementByXpath(currentXpath + "/div[3]/span[1]");
-      if(currentMessage){
-        matchMessages.push(currentMessage.innerHTML);
-      }
+function getMessages(whoSent) {
+    if (whoSent == 'match') {
+        baseXpath = MATCH_MESSAGES_XPATH
     }
-    index += 1
-  }
-
-  return matchMessages;
-}
-
-function orderMessages(myMessages, allMessages){
-  var orderedMessages = []
-
-  allMessages.forEach(function(entry) {
-    
-    if(myMessages.includes(entry)){
-      orderedMessages.push({"User": entry});
-    } else{
-      orderedMessages.push({"Match": entry});
+    if (whoSent == 'user') {
+        baseXpath = USER_MESSAGES_XPATH
     }
-  });
+    if (whoSent == 'all') {
+        baseXpath = ALL_MESSAGES_XPATH
+    }
 
-  return orderedMessages;
+    var currentMessageBlock = true;
+    var index = 1;
+    var matchMessages = [];
+
+    while (currentMessageBlock) {
+        currentXpath = baseXpath.replace("divIndex", index)
+        currentMessageBlock = getElementByXpath(currentXpath);
+        if (currentMessageBlock) {
+            currentMessage = getElementByXpath(currentXpath + "/div[3]/span[1]");
+            if (currentMessage) {
+                matchMessages.push(currentMessage.innerHTML);
+            }
+        }
+        index += 1
+    }
+
+    return matchMessages;
 }
 
-function injectDatepalWidget(){
-  var datepal = document.createElement("div");
-  datepal.id = "datepal";
-  datepalClasses.forEach(element => datepal.classList.add(element));
-  datepal.innerHTML = getWidget();
-  let conversation_block = getElementByXpath(CONV_BLOCK_XPATH);
-  insertAfter(datepal, conversation_block);
+function orderMessages(myMessages, allMessages) {
+    var orderedMessages = []
+
+    allMessages.forEach(function (entry) {
+
+        if (myMessages.includes(entry)) {
+            orderedMessages.push({"User": entry});
+        } else {
+            orderedMessages.push({"Match": entry});
+        }
+    });
+
+    return orderedMessages;
 }
 
-function getConversationMessage(){
-  var myMessages = getMessages("me");
-  var allMessages = getMessages("all");
-  var orderedMessages = orderMessages(myMessages, allMessages);
-  return orderedMessages;
+function injectDatepalWidget() {
+    var datepal = document.createElement("div");
+    datepal.id = "datepal";
+    datepalClasses.forEach(element => datepal.classList.add(element));
+    datepal.innerHTML = getWidget();
+    let conversation_block = getElementByXpath(CONV_BLOCK_XPATH);
+    insertAfter(datepal, conversation_block);
 }
 
-function getNewIdeaClick(){
-  document.getElementById('loader-text').style.display = "None";
-  document.getElementById('datepal-suggestion').style.display = "inline-block";
-  var messages = {'input': getConversationMessage()};
-  var http = new XMLHttpRequest();
-  let url = 'https://5d34dd7278.execute-api.us-east-2.amazonaws.com/default/datepal-api';
-  http.open('POST', url, true);
-  http.setRequestHeader('Content-type', 'application/json');
-  http.onreadystatechange = function() {
-      if(http.readyState == 4 && http.status == 200) {
-          console.log(http.responseText);
-      } else {
-          console.log('wtf http request failed');
-      }
-   }
-  http.send(JSON.stringify(messages));
+function getConversationMessage() {
+    var myMessages = getMessages("user");
+    var allMessages = getMessages("all");
+    var orderedMessages = orderMessages(myMessages, allMessages);
+    return orderedMessages;
 }
 
-function sendClick(){
-  var selectedIdea = document.getElementById('datepal-suggestion').innerText;
-  var inputField = getElementByXpath(MESSAGE_INPUT_XPATH);
-  inputField.value = selectedIdea;
+function getNewIdeaClick() {
+    document.getElementById('loader-text').style.display = "None";
+    document.getElementById('datepal-suggestion').style.display = "inline-block";
+    var messages = {'input': getConversationMessage()};
+    chrome.runtime.sendMessage(
+        {
+            contentScriptQuery: 'datepalGenerate',
+            data: JSON.stringify(messages),
+        }, function (response) {
+            console.log(response);
+        });
+}
+
+function sendClick() {
+    var selectedIdea = document.getElementById('datepal-suggestion').innerText;
+    var inputField = getElementByXpath(MESSAGE_INPUT_XPATH);
+    inputField.value = selectedIdea;
 }
 
 function consoleLogMessage(messages) {
-  var messagesString = '';
-  messages.forEach(function(entry) {
-     var entry = Object.entries(entry);
-      messagesString += entry[0][0] + ': ' + entry[0][1] + '\n';
-  });
-  console.log(messagesString);
+    var messagesString = '';
+    messages.forEach(function (entry) {
+        var entry = Object.entries(entry);
+        messagesString += entry[0][0] + ': ' + entry[0][1] + '\n';
+    });
+    console.log(messagesString);
 }
 
-function mainFlow(){
-  injectDatepalWidget();
+function mainFlow() {
+    injectDatepalWidget();
 
-  setTimeout(function() {
-    var messages = getConversationMessage();
-    consoleLogMessage(messages);
-  }, 2000);
+    setTimeout(function () {
+        var messages = getConversationMessage();
+        consoleLogMessage(messages);
+    }, 2000);
 
 }
 
-var waitForEl = function(callback) {
-  if (isLoaded()) {
-    callback();
-  }
-  setTimeout(function() {
-    waitForEl(callback);
-  }, 500);
+var waitForEl = function (callback) {
+    if (isLoaded()) {
+        callback();
+    }
+    setTimeout(function () {
+        waitForEl(callback);
+    }, 500);
 };
 
 var datepalClasses = ["datepal-wrapper", "D(f)", "W(100%)", "BdT", "Bdtc($c-divider)", "Bgc(#fff)", "Pos(r)"];
 
-waitForEl(function() {
-    if(!document.getElementById("datepal")) {
-      mainFlow();
+waitForEl(function () {
+    if (!document.getElementById("datepal")) {
+        mainFlow();
 
-      // Send button was clicked
-      document.getElementById('datepal-send-button').onclick = function(){
-        sendClick();
-      };
-      // New idea button was clicked
-      document.getElementById('datepal-new-idea').onclick = function(){
-        getNewIdeaClick();
-      };
+        // Send button was clicked
+        document.getElementById('datepal-send-button').onclick = function () {
+            sendClick();
+        };
+        // New idea button was clicked
+        document.getElementById('datepal-new-idea').onclick = function () {
+            getNewIdeaClick();
+        };
 
     }
 });
