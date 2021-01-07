@@ -20,15 +20,17 @@ def respond(err, res=None):
 
 
 def openai_response(prompt):
-    return openai.Completion.create(
+    response = openai.Completion.create(
         engine="instruct-davinci-beta",
         prompt=prompt,
         temperature=0.7,
         max_tokens=150,
         top_p=1,
-        frequency_penalty=0.65,
-        presence_penalty=0.25,
+        frequency_penalty=0.7,
+        presence_penalty=0.3,
     )
+    print(response)
+    return response
 
 
 def extract_choices(response_text):
@@ -39,7 +41,7 @@ def extract_choices(response_text):
 
 
 def is_valid_response(choices):
-    return len("".join(choices)) >= 10
+    return len("".join(choices)) >= 15
 
 
 def fetch_choices(prompt):
