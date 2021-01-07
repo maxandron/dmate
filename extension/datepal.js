@@ -1,11 +1,3 @@
-// Constants
-//  XPATHS
-const CONV_BLOCK_XPATH = "//div[@aria-label='Conversation history']";
-const MATCH_MESSAGES_XPATH = "//div[contains(@class, 'msgWrp') and contains(@class, 'Pstart(62px)')][divIndex]/div[1]";
-const USER_MESSAGES_XPATH = "//div[contains(@class, 'msgWrp') and contains(@class, 'Pstart(100px)')][divIndex]/div[1]";
-const ALL_MESSAGES_XPATH = "//div[contains(@class, 'msgWrp')][divIndex]/div[1]"
-const MESSAGE_INPUT_XPATH = "//*[@placeholder='Type a message ...']";
-
 function isLoaded() {
     let conversation_block = getElementByXpath(CONV_BLOCK_XPATH);
     return conversation_block != 'undefined' && conversation_block != null;
@@ -126,9 +118,9 @@ waitForEl(function () {
         mainFlow();
 
         // Send button was clicked
-        document.getElementById('datepal-send-button').onclick = function () {
-            sendClick();
-        };
+        // document.getElementById('datepal-send-button').onclick = function () {
+        //     sendClick();
+        // };
         // New idea button was clicked
         document.getElementById('datepal-new-idea').onclick = function () {
             getNewIdeaClick();
