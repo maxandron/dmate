@@ -2,9 +2,14 @@ import boto3
 import json
 import os
 import openai
-import re
 
-CHOICES_REGEX = r" (.+?) ?[1-9][\.\)\-]| ?(.+?)$"
+PROMPT = (
+    "The following is a conversation between a user and a match. "
+    "The user is flirty, easygoing, clever, mysterious, and kind. "
+    "The goal of the user is to get a date with the match "
+    "without being too pushy."
+    "\n###\n{}\nUser:"
+)
 
 # dynamo = boto3.client('dynamodb')
 
@@ -19,56 +24,63 @@ def respond(err, res=None):
     }
 
 
-def openai_response(prompt):
+def openai_content_filter(prompt):
     response = openai.Completion.create(
-        engine="instruct-davinci-beta",
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=150,
-        top_p=1,
-        frequency_penalty=0.7,
-        presence_penalty=0.3,
+        engine="content-filter-alpha-c4",
+        prompt="<|endoftext|>[{}]\n--\nLabel:".format(prompt),
+        temperature=0.0,
+        max_tokens=1,
+        top_p=0,
+        logprobs=3,
     )
     print(response)
-    return response
+    return response["choices"][0]
 
 
-def extract_choices(response_text):
-    response_text = response_text.replace("\n", " ")
-    print(response_text)
-    matches = re.findall(CHOICES_REGEX, response_text)
-    return ["".join(match) for match in matches]
+def openai_gpt3(messages):
+    response = openai.Completion.create(
+        engine="davinci",
+        prompt=PROMPT.format("\n".join(messages)),
+        temperature=0.9,
+        max_tokens=150,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0.6,
+        stop=["Match", "User"],
+    )
+    print(response)
+    return response["choices"][0]
 
 
-def is_valid_response(choices):
-    return len("".join(choices)) >= 15
+def sanitize_response(response_text):
+    return response_text.split("\n")[0][1:]
 
 
-def fetch_choices(prompt):
-    response_text = openai_response(prompt)["choices"][0]["text"]
-    return extract_choices(response_text)
+def fetch_suggestion(messages):
+    """Calls openai to receive a reply suggestion and santizes the response
+    """
+    response = openai_gpt3(messages)
+    response_text = response["text"]
+    return sanitize_response(response_text)
+
+
+def format_messages(messages_array):
+    """Formats the json array received from the client
+    into what openai expects
+    """
+    messages = []
+    for messages_dict in messages_array:
+        sender, message = messages_dict.popitem()
+        messages.append("{}: {}".format(sender, message))
+    return messages
 
 
 def lambda_handler(event, context):
-    # print("Body :" + json.dumps(event["body"]))
-
-    messages = []
-    for messages_dict in json.loads(event["body"])["input"]:
-        sender, message = messages_dict.popitem()
-        messages.append("{}: {}".format(sender, message))
-
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
-    prompt = "The following is a conversation between a user and a match. The user is flirty, easygoing, clever, mysterious, and kind. The goal of the user is to get a date with the match without being too pushy.\n###\n{}\n\nGenerate 5 clever responses the user may give:\n\n1."
-    prompt = prompt.format("\n".join(messages))
-    # print(prompt)
+    messages = format_messages(json.loads(event["body"])["input"])
 
-    choices = fetch_choices(prompt)
-
-    # once in a while gpt-3 returns an empty response
-    # in that case we just try one more time
-    if not is_valid_response(choices):
-        choices = fetch_choices(prompt)
+    suggestion = fetch_suggestion(messages)
 
     """    operations = {
         'DELETE': lambda dynamo, x: dynamo.delete_item(**x),
@@ -85,4 +97,4 @@ def lambda_handler(event, context):
         return respond(ValueError('Unsupported method "{}"'.format(operation)))
     """
 
-    return respond(None, choices)
+    return respond(None, suggestion)
