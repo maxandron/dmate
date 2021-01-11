@@ -46,22 +46,39 @@ def openai_gpt3(messages):
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0.6,
+        n=3,
+        logprobs=1,
         stop=["Match", "User"],
     )
     print(response)
-    return response["choices"][0]
+    return response["choices"]
 
 
-def sanitize_response(response_text):
-    return response_text.split("\n")[0][1:]
+def average_logprob(logprobs):
+    return sum(logprobs) / len(logprobs)
 
 
-def fetch_suggestion(messages):
-    """Calls openai to receive a reply suggestion and santizes the response
+def sanitize_response(choices):
+    """Sorts the choices according to the average logprob values of the tokens
+    inside the text. Then makes sure to take only the first line
+    and strip the spaces
     """
-    response = openai_gpt3(messages)
-    response_text = response["text"]
-    return sanitize_response(response_text)
+    sorted_options = sorted(
+        choices, key=lambda x: average_logprob(x["logprobs"]["token_logprobs"])
+    )
+    return [
+        option["text"].strip().split("\n")[0].strip()
+        for option in sorted_options
+    ]
+
+
+def fetch_suggestions(messages):
+    """Calls openai to receive reply suggestions and santizes the response
+    Returns a list of the choices
+    """
+    choices = openai_gpt3(messages)
+    print(choices)
+    return sanitize_response(choices)
 
 
 def format_messages(messages_array):
@@ -80,7 +97,7 @@ def lambda_handler(event, context):
 
     messages = format_messages(json.loads(event["body"])["input"])
 
-    suggestion = fetch_suggestion(messages)
+    suggestions = fetch_suggestions(messages)
 
     """    operations = {
         'DELETE': lambda dynamo, x: dynamo.delete_item(**x),
@@ -97,4 +114,4 @@ def lambda_handler(event, context):
         return respond(ValueError('Unsupported method "{}"'.format(operation)))
     """
 
-    return respond(None, suggestion)
+    return respond(None, suggestions)
