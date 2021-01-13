@@ -4,12 +4,17 @@ import os
 import openai
 
 PROMPT = (
-    "The following is a conversation between a user and a match. "
-    "The user is flirty, easygoing, clever, mysterious, and kind. "
-    "The goal of the user is to get a date with the match "
+    "The following is a conversation between a {user_name} and a {match_name}. "
+    "The {user_name} is flirty, easygoing, clever, mysterious, and kind. "
+    "The goal of the {user_name} is to get a date with the {match_name} "
     "without being too pushy."
-    "\n###\n{}\nUser:"
+    "\n###\n{prompt}\n{user_name}:"
 )
+
+OPTIONS_AMOUNT = 3
+SERVER_USER_NAME = "Clever Man"
+SERVER_MATCH_NAME = "Woman"
+CLIENT_USER_NAME = "User"
 
 # dynamo = boto3.client('dynamodb')
 
@@ -38,19 +43,24 @@ def openai_content_filter(prompt):
 
 
 def openai_gpt3(messages):
+    prompt = PROMPT.format(
+        prompt="\n".join(messages),
+        user_name=SERVER_USER_NAME,
+        match_name=SERVER_MATCH_NAME,
+    )
+    print(prompt)
     response = openai.Completion.create(
         engine="davinci",
-        prompt=PROMPT.format("\n".join(messages)),
+        prompt=prompt,
         temperature=0.9,
         max_tokens=150,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0.6,
-        n=3,
+        n=OPTIONS_AMOUNT,
         logprobs=1,
-        stop=["Match", "User"],
+        stop=[SERVER_USER_NAME, SERVER_MATCH_NAME],
     )
-    print(response)
     return response["choices"]
 
 
@@ -77,8 +87,13 @@ def fetch_suggestions(messages):
     Returns a list of the choices
     """
     choices = openai_gpt3(messages)
-    print(choices)
     return sanitize_response(choices)
+
+
+def client_to_server_sender(sender):
+    if sender == CLIENT_USER_NAME:
+        return SERVER_USER_NAME
+    return SERVER_MATCH_NAME
 
 
 def format_messages(messages_array):
@@ -88,7 +103,9 @@ def format_messages(messages_array):
     messages = []
     for messages_dict in messages_array:
         sender, message = messages_dict.popitem()
-        messages.append("{}: {}".format(sender, message))
+        messages.append(
+            "{}: {}".format(client_to_server_sender(sender), message)
+        )
     return messages
 
 
@@ -98,20 +115,5 @@ def lambda_handler(event, context):
     messages = format_messages(json.loads(event["body"])["input"])
 
     suggestions = fetch_suggestions(messages)
-
-    """    operations = {
-        'DELETE': lambda dynamo, x: dynamo.delete_item(**x),
-        'GET': lambda dynamo, x: dynamo.scan(**x),
-        'POST': lambda dynamo, x: dynamo.put_item(**x),
-        'PUT': lambda dynamo, x: dynamo.update_item(**x),
-    }
-
-    operation = event['httpMethod']
-    if operation in operations:
-        payload = event['queryStringParameters'] if operation == 'GET' else json.loads(event['body'])
-        return respond(None, operations[operation](dynamo, payload))
-    else:
-        return respond(ValueError('Unsupported method "{}"'.format(operation)))
-    """
 
     return respond(None, suggestions)
