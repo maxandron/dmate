@@ -65,8 +65,8 @@ function getConversationMessage() {
 }
 
 function getNewIdeaClick() {
-    document.getElementById('loader-text').style.display = "None";
-    document.getElementById('datepal-suggestion').style.display = "inline-block";
+    document.getElementById('loader-text').style.display = "inline-block";
+    document.getElementById('ideas-block').style.display = "none";
     var messages = {'input': getConversationMessage()};
     chrome.runtime.sendMessage(
         {
@@ -74,11 +74,33 @@ function getNewIdeaClick() {
             data: JSON.stringify(messages),
         }, function (response) {
             console.log(response);
+            setIdeas(response);
         });
 }
 
+function setIdeas(ideas){
+
+    // Remove current option
+    var ideasBox = document.getElementById('ideas-box');
+    var length = ideasBox.options.length;
+    for (i = length-1; i >= 0; i--) {
+        ideasBox.options[i] = null;
+    }
+
+    // Add new options
+    ideas.forEach(function (idea) {
+        var option = document.createElement("option");
+        option.text = idea;
+        option.value = idea;
+        ideasBox.add(option);
+    });
+
+    document.getElementById('loader-text').style.display = "none";
+    document.getElementById('ideas-block').style.display = "inline-block";
+}
+
 function sendClick() {
-    var selectedIdea = document.getElementById('datepal-suggestion').innerText;
+    var selectedIdea = document.getElementById('ideas-box').value;
     var inputField = getElementByXpath(MESSAGE_INPUT_XPATH);
     inputField.value = selectedIdea;
 }
@@ -118,9 +140,9 @@ waitForEl(function () {
         mainFlow();
 
         // Send button was clicked
-        // document.getElementById('datepal-send-button').onclick = function () {
-        //     sendClick();
-        // };
+        document.getElementById('datepal-send-button').onclick = function () {
+            sendClick();
+        };
         // New idea button was clicked
         document.getElementById('datepal-new-idea').onclick = function () {
             getNewIdeaClick();
