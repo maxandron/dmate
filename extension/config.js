@@ -14,3 +14,4 @@ const ALL_MESSAGES_XPATH        = "//div[contains(@class, 'msgWrp')][divIndex]/d
 const MESSAGE_INPUT_XPATH       = "//*[@placeholder='Type a message ...']";
 const MATCH_NAME_XPATH          = "//h1[@itemprop='name']";
 const MATCH_DESCRIPTION_XPATH   = "//div[contains(@class, 'BreakWord')]/div[1]";
+const MATCH_INERESTS_XPATH      = "//div[@tabindex='-1'][interestIdex]";
