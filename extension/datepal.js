@@ -65,9 +65,19 @@ function getConversationMessage() {
 }
 
 function getNewIdeaClick() {
+
+    // Show loading
     document.getElementById('loader-text').style.display = "inline-block";
     document.getElementById('ideas-block').style.display = "none";
-    var messages = {'input': getConversationMessage()};
+
+    // Get data
+    var messages = {
+        'input': getConversationMessage(),
+        'match_name': localStorage.getItem('currentMatchName')
+    };
+
+    console.log(messages);
+
     chrome.runtime.sendMessage(
         {
             contentScriptQuery: 'datepalGenerate',
@@ -114,13 +124,26 @@ function consoleLogMessage(messages) {
     console.log(messagesString);
 }
 
+function getInitialData(){
+    localStorage.setItem('currentMatchName', getElementByXpath(MATCH_NAME_XPATH).innerHTML);
+    console.log("Match name: " + localStorage.getItem('currentMatchName'));
+    consoleLogMessage(getConversationMessage());
+}
+
 function mainFlow() {
     injectDatepalWidget();
 
     setTimeout(function () {
-        var messages = getConversationMessage();
-        consoleLogMessage(messages);
-    }, 2000);
+        try {
+            getInitialData()
+        }
+        catch(err) {
+            console.log(err)
+            setTimeout(function () {
+                getInitialData()
+            }, 1000);
+        }
+    }, 1000);
 
 }
 
