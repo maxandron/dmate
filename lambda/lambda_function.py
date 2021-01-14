@@ -1,22 +1,37 @@
-import boto3
 import json
 import os
 import openai
 
-PROMPT = (
-    "The following is a conversation between a {user_name} and a {match_name}. "
-    "The {user_name} is flirty, easygoing, clever, mysterious, and kind. "
-    "The goal of the {user_name} is to get a date with the {match_name} "
+PROMPT_FORMAT = (
+    "The following is a Tinder conversation "
+    "between a {user_name} and a {match_name}. "
+    "The {user_name} is {attributes}. "
+    "{description}"
+    "The goal of the {user_name} is {goal} with the {match_name} "
     "without being too pushy."
-    "\n###\n{prompt}\n{user_name}:"
+    "\n###\n{chat}\n{user_name}:"
 )
+
+DESCRIPTION_FORMAT = "The {match_name}'s profile description is: {description}. "
+INTERESTS_FORMAT = "{match_name}'s interests include {interests}."
+SINGLE_INTEREST_FORMAT = "{match_name} is interested in {interests}."
 
 OPTIONS_AMOUNT = 3
 SERVER_USER_NAME = "Clever Man"
 SERVER_MATCH_NAME = "Woman"
 CLIENT_USER_NAME = "User"
+USER_ATTRIBUTES = "flirty, easygoing, clever, mysterious, and kind"
+USER_GOAL = "to get a date"
 
 # dynamo = boto3.client('dynamodb')
+
+
+def list_of_items_to_grammatical_text(items):
+    if len(items) <= 1:
+        return "".join(items)
+    if len(items) == 2:
+        return " and ".join(items)
+    return "{}, and {}".format(", ".join(items[:-1]), items[-1])
 
 
 def respond(err, res=None):
@@ -43,10 +58,12 @@ def openai_content_filter(prompt):
 
 
 def openai_gpt3(messages):
-    prompt = PROMPT.format(
-        prompt="\n".join(messages),
+    prompt = PROMPT_FORMAT.format(
+        chat="\n".join(messages),
         user_name=SERVER_USER_NAME,
         match_name=SERVER_MATCH_NAME,
+        attributes=USER_ATTRIBUTES,
+        goal=USER_GOAL,
     )
     print(prompt)
     response = openai.Completion.create(
@@ -112,7 +129,8 @@ def format_messages(messages_array):
 def lambda_handler(event, context):
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
-    messages = format_messages(json.loads(event["body"])["input"])
+    payload = json.loads(event["body"])
+    messages = format_messages(payload["input"])
 
     suggestions = fetch_suggestions(messages)
 
