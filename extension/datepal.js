@@ -73,7 +73,8 @@ function getNewIdeaClick() {
     // Get data
     var messages = {
         'input': getConversationMessage(),
-        'match_name': localStorage.getItem('currentMatchName')
+        'match_name': localStorage.getItem('currentMatchName'),
+        'match_desc': localStorage.getItem('currentMatchDescription')
     };
 
     console.log(messages);
@@ -126,7 +127,9 @@ function consoleLogMessage(messages) {
 
 function getInitialData(){
     localStorage.setItem('currentMatchName', getElementByXpath(MATCH_NAME_XPATH).innerHTML);
-    console.log("Match name: " + localStorage.getItem('currentMatchName'));
+    localStorage.setItem('currentMatchDescription', getElementByXpath(MATCH_DESCRIPTION_XPATH).innerHTML);
+    // console.log("Match name: " + localStorage.getItem('currentMatchName'));
+    // console.log("Match description: " + localStorage.getItem('currentMatchName'));
     consoleLogMessage(getConversationMessage());
 }
 
