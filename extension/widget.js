@@ -31,7 +31,6 @@ function getWidget() {
 }
 .form-group .bar {
   position: relative;
-  display: block;
 }
 .form-group .bar::before {
   content: '';
