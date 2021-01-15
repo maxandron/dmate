@@ -14,15 +14,12 @@ PROMPT_FORMAT = (
     "\n###\n{messages}\n{user_name}:"
 )
 
-DESCRIPTION_FORMAT = (
-    "The {match_name}'s profile description is: '{description}'. "
-)
-INTERESTS_FORMAT = "{match_name}'s interests include {interests}."
-SINGLE_INTEREST_FORMAT = "{match_name} is interested in {interests}."
+DESCRIPTION_FORMAT = "{match_name}'s profile description is: '{description}'. "
+INTERESTS_FORMAT = "{match_name}'s interests include {interests}. "
+SINGLE_INTEREST_FORMAT = "{match_name} is interested in {interests}. "
 
 OPTIONS_AMOUNT = 3
 SERVER_USER_NAME = "Clever Man"
-SERVER_MATCH_NAME = "Woman"
 CLIENT_USER_NAME = "User"
 USER_ATTRIBUTES = "flirty, easygoing, clever, mysterious, and kind"
 USER_GOAL = "to get a date"
@@ -52,7 +49,7 @@ def create_prompt(
 
     if description:
         formatted_description = DESCRIPTION_FORMAT.format(
-            match_name=match_name, description=description.replace('\n', ' ')
+            match_name=match_name, description=description.replace("\n", " ")
         )
     if interests:
         if len(interests) == 1:
