@@ -71,11 +71,12 @@ function getNewIdeaClick() {
     document.getElementById('ideas-block').style.display = "none";
 
     // Get data
+    console.log(JSON.parse(localStorage.getItem('currentMatchInterests')))
     var payload = {
-        'conversation': getConversationMessage(),
+        'messages': getConversationMessage(),
         'match_name': localStorage.getItem('currentMatchName'),
         'match_description': localStorage.getItem('currentMatchDescription'),
-        'match_interests': localStorage.getItem('currentMatchInterests')
+        'match_interests': JSON.parse(localStorage.getItem('currentMatchInterests'))
     };
 
     console.log(payload);
@@ -134,9 +135,11 @@ function getInterests() {
         var currentXpath = getElementByXpath(MATCH_INERESTS_XPATH.replace("interestIdex", index));
 
         if (currentXpath) {
-            interests += currentXpath.innerHTML;
+            interests.push(currentXpath.innerHTML);
+            console.log(currentXpath.innerHTML);
         } else {
-            return interests.slice(0, -2);
+            console.log(interests);
+            return interests;
         }
 
         index += 1
@@ -145,7 +148,7 @@ function getInterests() {
 
 function getInitialData() {
     localStorage.setItem('currentMatchName', getElementByXpath(MATCH_NAME_XPATH).innerHTML);
-    localStorage.setItem('currentMatchInterests', getInterests());
+    localStorage.setItem('currentMatchInterests', JSON.stringify(getInterests()));
     try {
         localStorage.setItem('currentMatchDescription', getElementByXpath(MATCH_DESCRIPTION_XPATH).innerHTML);
     } catch (e) {
