@@ -3,8 +3,9 @@ let DATEPAL_BACKEND_URL = 'https://5d34dd7278.execute-api.us-east-2.amazonaws.co
 
 // Widget Design
 let SEND_BUTTON_TEXT        = "Pick";
-let SEND_BUTTON_COLOR       = "background: linear-gradient(262deg, #aefd7c, #02C39A);";
+let SEND_BUTTON_COLOR       = "background: linear-gradient(262deg, #ff7854, #fd267d)";
 let GENNERATE_BUTTON_TEXT   = "New Idea";
+let GENNERATE_BUTTON_COLOR  = "background: linear-gradient(262deg, #aefd7c, #02C39A);";
 
 // XPATHS
 const CONV_BLOCK_XPATH          = "//div[@aria-label='Conversation history']";

@@ -31,7 +31,6 @@ function getWidget() {
 }
 .form-group .bar {
   position: relative;
-  border-bottom: 0.0625rem solid #999;
   display: block;
 }
 .form-group .bar::before {
@@ -111,8 +110,12 @@ function getWidget() {
 
 #ideas-box{
     height: 100%;
-    min-width: 400px;
     font-size: 14px;
+}
+#ideas-block{
+    border: solid 1px #e0e4e9;
+    min-width: 600px;
+    border-radius: 8px;
 }
 
 </style>
@@ -188,20 +191,31 @@ function getWidget() {
     }
     </style>
     
-    <div class="CenterAlign Pos(r) Fxs(0) Z(1) Fz($xs) Bgc($c-bg) Fw($semibold) Cur(p) BdT Bdc($c-divider) C($c-secondary)" style="position: absolute;right: 28px;bottom: 9px;">
+    <div class="CenterAlign Fxs(0) Fz($xs) datepal-button-right-wrapper">
         <button id="datepal-new-idea" class="datepal-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($primary-gradient):h::b C(#fff):h Fw($semibold) focus-button-style">{GENNERATE_BUTTON_TEXT}</button>
         <button id="datepal-send-button" class="datepal-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($datepal-send-gradient):h::b C(#fff):h Fw($semibold) BdEnd Bdc($c-divider) W(50%) focus-button-style">{SEND_BUTTON_TEXT}</button>
     </div>
 
     <style>
+        .datepal-button-right-wrapper{
+            position: absolute;right: 28px;bottom: 9px;
+        }
         #datepal-send-button{
             //display: none;
+            border-radius: 22px;
+            background-color: #e0e4e9;
         }
         #datepal-new-idea{
             width: 114px;
+            border-radius: 22px;
+            background-color: #e0e4e9;
+            margin-right: 12px;
+        }
+        #datepal-new-idea:hover{
+          {GENNERATE_BUTTON_COLOR}
         }
         #datepal-send-button:hover {
-            {SEND_BUTTON_COLOR}
+          {SEND_BUTTON_COLOR}
         }
         .datepal-buttons{
             height: 40px;
@@ -209,7 +223,7 @@ function getWidget() {
         .datepal-wrapper{
             width: 100%;
             height: 60px;
-            padding: 17px;
+            padding: 12px;
         }
     </style>
 `;
@@ -217,6 +231,7 @@ function getWidget() {
 widgetHtml = widgetHtml.replace("{SEND_BUTTON_TEXT}", SEND_BUTTON_TEXT);
 widgetHtml = widgetHtml.replace("{SEND_BUTTON_COLOR}", SEND_BUTTON_COLOR);
 widgetHtml = widgetHtml.replace("{GENNERATE_BUTTON_TEXT}", GENNERATE_BUTTON_TEXT);
+widgetHtml = widgetHtml.replace("{GENNERATE_BUTTON_COLOR}", GENNERATE_BUTTON_COLOR);
 
 return widgetHtml;
 }
