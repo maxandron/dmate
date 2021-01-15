@@ -71,31 +71,32 @@ function getNewIdeaClick() {
     document.getElementById('ideas-block').style.display = "none";
 
     // Get data
-    var messages = {
-        'input': getConversationMessage(),
+    console.log(JSON.parse(localStorage.getItem('currentMatchInterests')))
+    var payload = {
+        'messages': getConversationMessage(),
         'match_name': localStorage.getItem('currentMatchName'),
         'match_description': localStorage.getItem('currentMatchDescription'),
-        'match_interests': localStorage.getItem('currentMatchInterests')
+        'match_interests': JSON.parse(localStorage.getItem('currentMatchInterests'))
     };
 
-    console.log(messages);
+    console.log(payload);
 
     chrome.runtime.sendMessage(
         {
             contentScriptQuery: 'datepalGenerate',
-            data: JSON.stringify(messages),
+            data: JSON.stringify(payload),
         }, function (response) {
             console.log(response);
             setIdeas(response);
         });
 }
 
-function setIdeas(ideas){
+function setIdeas(ideas) {
 
     // Remove current option
     var ideasBox = document.getElementById('ideas-box');
     var length = ideasBox.options.length;
-    for (i = length-1; i >= 0; i--) {
+    for (i = length - 1; i >= 0; i--) {
         ideasBox.options[i] = null;
     }
 
@@ -126,35 +127,35 @@ function consoleLogMessage(messages) {
     console.log(messagesString);
 }
 
-function getInterests(){
+function getInterests() {
     var index = 1;
-    var interests = "";
+    var interests = [];
 
     while (true) {
         var currentXpath = getElementByXpath(MATCH_INERESTS_XPATH.replace("interestIdex", index));
-        
-        if(currentXpath){
-            interests += currentXpath.innerHTML + ", ";
-        } else{
-            return interests.slice(0, -2);
+
+        if (currentXpath) {
+            interests.push(currentXpath.innerHTML);
+            console.log(currentXpath.innerHTML);
+        } else {
+            console.log(interests);
+            return interests;
         }
-        
+
         index += 1
     }
 }
 
-function getInitialData(){
+function getInitialData() {
     localStorage.setItem('currentMatchName', getElementByXpath(MATCH_NAME_XPATH).innerHTML);
-    localStorage.setItem('currentMatchInterests', getInterests());
-    try{
+    localStorage.setItem('currentMatchInterests', JSON.stringify(getInterests()));
+    try {
         localStorage.setItem('currentMatchDescription', getElementByXpath(MATCH_DESCRIPTION_XPATH).innerHTML);
-    } catch(e){
+    } catch (e) {
         localStorage.setItem('currentMatchDescription', '');
-        console.log(e);
+        console.log("Failed extracting description: ", e);
     }
-        
-    // console.log("Match name: " + localStorage.getItem('currentMatchName'));
-    // console.log("Match description: " + localStorage.getItem('currentMatchName'));
+
     consoleLogMessage(getConversationMessage());
 }
 
@@ -165,7 +166,7 @@ function mainFlow() {
         try {
             getInitialData()
         }
-        catch(err) {
+        catch (err) {
             console.log(err)
             setTimeout(function () {
                 getInitialData()
