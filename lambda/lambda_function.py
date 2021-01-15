@@ -9,7 +9,7 @@ PROMPT_FORMAT = (
     "between a {user_name} and {match_name}. "
     "The {user_name} is {attributes}. "
     "{description}{interests}"
-    "The goal of the {user_name} is {goal} with the {match_name} "
+    "The goal of the {user_name} is {goal} with {match_name} "
     "without being too pushy."
     "\n###\n{messages}\n{user_name}:"
 )
