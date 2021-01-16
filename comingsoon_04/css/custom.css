@@ -1,0 +1,15 @@
+.coming-soon-penguin{
+    width: 42px;
+    position: relative;
+    bottom: 4px;
+}
+
+/* Mobile */
+@media only screen and (max-width: 600px) {
+    .coming-soon-header{
+        font-size: 30px;
+    }
+    .coming-soon-text{
+        font-size:22px;
+    }
+}

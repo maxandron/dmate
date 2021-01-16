@@ -31,7 +31,10 @@
         }
     ],
     "web_accessible_resources": [
-        "datapal.html"
+        "datapal.html",
+        "*.jpg",
+        "*.JPG",
+        "*.png"
     ],
     "page_action": {
         "default_popup": "popup.html",
