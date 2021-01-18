@@ -8,13 +8,12 @@ PROMPT_FORMAT = (
     "The following is a Tinder conversation "
     "between a {user_name} and {match_name}. "
     "The {user_name} is {attributes}. "
-    "{description}{interests}"
+    "{interests}"
     "The goal of the {user_name} is {goal} with {match_name} "
     "without being too pushy."
     "\n###\n{messages}\n{user_name}:"
 )
 
-DESCRIPTION_FORMAT = "{match_name}'s profile description is: '{description}'. "
 INTERESTS_FORMAT = "{match_name}'s interests include {interests}. "
 SINGLE_INTEREST_FORMAT = "{match_name} is interested in {interests}. "
 
@@ -40,17 +39,11 @@ def create_prompt(
     match_name: str,
     attributes: str,
     goal: str,
-    description: str,
     interests: List[str],
     messages: List[str],
 ) -> str:
-    formatted_description = ""
     formatted_interests = ""
 
-    if description:
-        formatted_description = DESCRIPTION_FORMAT.format(
-            match_name=match_name, description=description.replace("\n", " ")
-        )
     if interests:
         if len(interests) == 1:
             interests_format = SINGLE_INTEREST_FORMAT
@@ -66,7 +59,6 @@ def create_prompt(
         match_name=match_name,
         attributes=attributes,
         goal=goal,
-        description=formatted_description,
         interests=formatted_interests,
         messages="\n".join(messages),
     )
@@ -134,7 +126,6 @@ def fetch_suggestions(
     match_name: str,
     attributes: str,
     goal: str,
-    description: str,
     interests: List[str],
     messages: List[Dict[str, str]],
 ) -> List[str]:
@@ -146,7 +137,6 @@ def fetch_suggestions(
         match_name,
         attributes,
         goal,
-        description,
         interests,
         format_messages(user_name, match_name, messages),
     )
@@ -190,7 +180,6 @@ def lambda_handler(event: Dict, context):
         payload["match_name"],
         USER_ATTRIBUTES,
         USER_GOAL,
-        payload["match_description"],
         payload["match_interests"],
         payload["messages"],
     )

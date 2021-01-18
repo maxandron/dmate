@@ -75,8 +75,8 @@ function getNewIdeaClick() {
     var payload = {
         'messages': getConversationMessage(),
         'match_name': localStorage.getItem('currentMatchName'),
-        'match_description': localStorage.getItem('currentMatchDescription'),
-        'match_interests': JSON.parse(localStorage.getItem('currentMatchInterests'))
+        'match_interests': JSON.parse(localStorage.getItem('currentMatchInterests')),
+        'version': chrome.runtime.getManifest()['version']
     };
 
     console.log(payload);
@@ -149,12 +149,6 @@ function getInterests() {
 function getInitialData() {
     localStorage.setItem('currentMatchName', getElementByXpath(MATCH_NAME_XPATH).innerHTML);
     localStorage.setItem('currentMatchInterests', JSON.stringify(getInterests()));
-    try {
-        localStorage.setItem('currentMatchDescription', getElementByXpath(MATCH_DESCRIPTION_XPATH).innerHTML);
-    } catch (e) {
-        localStorage.setItem('currentMatchDescription', '');
-        console.log("Failed extracting description: ", e);
-    }
 
     consoleLogMessage(getConversationMessage());
 }
