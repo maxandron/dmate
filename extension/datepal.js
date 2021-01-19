@@ -39,9 +39,9 @@ function orderMessages(myMessages, allMessages) {
     allMessages.forEach(function (entry) {
 
         if (myMessages.includes(entry)) {
-            orderedMessages.push({"User": entry});
+            orderedMessages.push(["User", entry]);
         } else {
-            orderedMessages.push({"Match": entry});
+            orderedMessages.push(["Match", entry]);
         }
     });
 
