@@ -70,6 +70,11 @@ function getNewIdeaClick() {
     document.getElementById('loader-text').style.display = "inline-block";
     document.getElementById('ideas-block').style.display = "none";
 
+    // Change pick button
+    var sendButon = document.getElementById('datepal-send-button')
+    sendButon.disabled = true;
+    sendButon.classList.remove("pick-active");
+
     // Get data
     console.log(JSON.parse(localStorage.getItem('currentMatchInterests')))
     var payload = {
@@ -108,8 +113,14 @@ function setIdeas(ideas) {
         ideasBox.add(option);
     });
 
+    // Disaply selectbox
     document.getElementById('loader-text').style.display = "none";
     document.getElementById('ideas-block').style.display = "inline-block";
+
+    // Change pick button
+    var sendButon = document.getElementById('datepal-send-button')
+    sendButon.disabled = false;
+    sendButon.classList.add("pick-active");
 }
 
 function sendClick() {

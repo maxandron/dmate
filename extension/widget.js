@@ -241,7 +241,7 @@ function getWidget() {
     
     <div class="CenterAlign Fxs(0) Fz($xs) datepal-button-right-wrapper">
         <button id="datepal-new-idea" class="datepal-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($primary-gradient):h::b C(#fff):h Fw($semibold) focus-button-style">{GENNERATE_BUTTON_TEXT}</button>
-        <button id="datepal-send-button" class="datepal-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($datepal-send-gradient):h::b C(#fff):h Fw($semibold) BdEnd Bdc($c-divider) W(50%) focus-button-style">{SEND_BUTTON_TEXT}</button>
+        <button id="datepal-send-button" class="datepal-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($datepal-send-gradient):h::b C(#fff):h Fw($semibold) BdEnd Bdc($c-divider) W(50%) focus-button-style" disabled>{SEND_BUTTON_TEXT}</button>
     </div>
 
     <style>
@@ -249,9 +249,10 @@ function getWidget() {
             position: absolute;right: 28px;bottom: 9px;
         }
         #datepal-send-button{
-            //display: none;
+            cursor: default;
             border-radius: 22px;
             background-color: #e0e4e9;
+            color: white;
         }
         #datepal-new-idea{
             width: 114px;
@@ -262,8 +263,13 @@ function getWidget() {
         #datepal-new-idea:hover{
           {GENNERATE_BUTTON_COLOR}
         }
-        #datepal-send-button:hover {
+        .pick-active {
+          color: black !important;
+          cursor: pointer !important;
+        }
+        .pick-active:hover {
           {SEND_BUTTON_COLOR}
+          color: white !important;
         }
         .datepal-buttons{
             height: 40px;
