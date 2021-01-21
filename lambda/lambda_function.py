@@ -17,7 +17,7 @@ PROMPT_FORMAT = (
 INTERESTS_FORMAT = "{match_name}'s interests include {interests}. "
 SINGLE_INTEREST_FORMAT = "{match_name} is interested in {interests}. "
 
-OPTIONS_AMOUNT = 3
+OPTIONS_AMOUNT = 5
 SERVER_USER_NAME = "Clever Man"
 CLIENT_USER_NAME = "User"
 USER_ATTRIBUTES = "flirty, funny, clever, mysterious, and kind"
