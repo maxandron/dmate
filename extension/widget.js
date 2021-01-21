@@ -114,8 +114,58 @@ function getWidget() {
 }
 #ideas-block{
     border: solid 1px #e0e4e9;
-    min-width: 658px;
     border-radius: 8px;
+    width: 36vw;
+}
+#ideas-block {
+  select {
+    width: 100%;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+}
+
+
+@media(max-width:1700px) {
+  #ideas-block{
+    width: 34vw;
+  }
+}
+@media(max-width:1600px) {
+  #ideas-block{
+    width: 32vw;
+  }
+}
+@media(max-width:1500px) {
+  #ideas-block{
+    width: 30vw;
+  }
+}
+@media(max-width:1400px) {
+  #ideas-block{
+    width: 28vw;
+  }
+}
+@media(max-width:1300px) {
+  #ideas-block{
+    width: 24vw;
+  }
+}
+@media(max-width:1200px) {
+  #ideas-block{
+    width: 21vw;
+  }
+}
+@media(max-width:1100px) {
+  #ideas-block{
+    width: 20vw;
+  }
+}
+@media(max-width:1010px) {
+  #ideas-block{
+    width: 36vw;
+  }
 }
 
 </style>
@@ -124,7 +174,6 @@ function getWidget() {
         <select id="ideas-box">
             <option>Please click the new idea button..</option>
         </select>
-        <i class="bar"></i>
     </div>
 
     <div id="loader-text"></div>
