@@ -9,7 +9,7 @@ PROMPT_FORMAT = (
     "between a {user_name} and {match_name}. "
     "The {user_name} is {attributes}. "
     "{interests}"
-    "The goal of the {user_name} is {goal} with {match_name}"
+    "The goal of the {user_name} is {goal} with {match_name} "
     "without being too pushy."
     "\n###\n{messages}\n{user_name}:"
 )
@@ -20,7 +20,7 @@ SINGLE_INTEREST_FORMAT = "{match_name} is interested in {interests}. "
 OPTIONS_AMOUNT = 3
 SERVER_USER_NAME = "Clever Man"
 CLIENT_USER_NAME = "User"
-USER_ATTRIBUTES = "flirty, easygoing, clever, mysterious, and kind"
+USER_ATTRIBUTES = "flirty, funny, clever, mysterious, and kind"
 USER_GOAL = "to get a date"
 TAIL_EXCHANGES = 4
 

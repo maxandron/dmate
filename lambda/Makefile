@@ -8,5 +8,8 @@ build: clean
 deploy: build
 	aws lambda update-function-code --function-name datepal-api --zip-file fileb://build/package.zip
 
+logs:
+	aws logs tail /aws/lambda/datepal-api --format short
+
 clean:
 	rm -rf ./build/*
