@@ -1,7 +1,7 @@
 {
-    "name": "DatePal",
+    "name": "DMate",
     "version": "0.0.1",
-    "description": "DatePal is your little dating helper",
+    "description": "DMate is your little direct messaging helper",
     "permissions": [
         "*://*.amazonaws.com/*",
         "activeTab",
@@ -27,7 +27,7 @@
                 "config.js",
                 "widget.js",
                 "helpers.js",
-                "datepal.js"
+                "dmate.js"
             ]
         }
     ],

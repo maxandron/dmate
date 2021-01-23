@@ -1,7 +1,7 @@
 // Listen for requests to forward to backend
 chrome.runtime.onMessage.addListener(function (request, _, sendResponse) {
     console.log('got message');
-    fetch(DATEPAL_BACKEND_URL, {
+    fetch(DMATE_BACKEND_URL, {
         method: 'POST',
         headers: {
             'Content-type': 'application/json'

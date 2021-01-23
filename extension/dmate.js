@@ -48,13 +48,13 @@ function orderMessages(myMessages, allMessages) {
     return orderedMessages;
 }
 
-function injectDatepalWidget() {
-    var datepal = document.createElement("div");
-    datepal.id = "datepal";
-    datepalClasses.forEach(element => datepal.classList.add(element));
-    datepal.innerHTML = getWidget();
+function injectDMateWidget() {
+    var dmate = document.createElement("div");
+    dmate.id = "dmate";
+    dmateClasses.forEach(element => dmate.classList.add(element));
+    dmate.innerHTML = getWidget();
     let conversation_block = getElementByXpath(CONV_BLOCK_XPATH);
-    insertAfter(datepal, conversation_block);
+    insertAfter(dmate, conversation_block);
 }
 
 function getConversationMessage() {
@@ -71,7 +71,7 @@ function getNewIdeaClick() {
     document.getElementById('ideas-block').style.display = "none";
 
     // Change pick button
-    var sendButon = document.getElementById('datepal-send-button')
+    var sendButon = document.getElementById('dmate-send-button')
     sendButon.disabled = true;
     sendButon.classList.remove("pick-active");
 
@@ -88,7 +88,7 @@ function getNewIdeaClick() {
 
     chrome.runtime.sendMessage(
         {
-            contentScriptQuery: 'datepalGenerate',
+            contentScriptQuery: 'dmateGenerate',
             data: JSON.stringify(payload),
         }, function (response) {
             console.log(response);
@@ -118,7 +118,7 @@ function setIdeas(ideas) {
     document.getElementById('ideas-block').style.display = "inline-block";
 
     // Change pick button
-    var sendButon = document.getElementById('datepal-send-button')
+    var sendButon = document.getElementById('dmate-send-button')
     sendButon.disabled = false;
     sendButon.classList.add("pick-active");
 }
@@ -165,7 +165,7 @@ function getInitialData() {
 }
 
 function mainFlow() {
-    injectDatepalWidget();
+    injectDMateWidget();
 
     setTimeout(function () {
         try {
@@ -190,18 +190,18 @@ var waitForEl = function (callback) {
     }, 500);
 };
 
-var datepalClasses = ["datepal-wrapper", "D(f)", "W(100%)", "BdT", "Bdtc($c-divider)", "Bgc(#fff)", "Pos(r)"];
+var dmateClasses = ["dmate-wrapper", "D(f)", "W(100%)", "BdT", "Bdtc($c-divider)", "Bgc(#fff)", "Pos(r)"];
 
 waitForEl(function () {
-    if (!document.getElementById("datepal")) {
+    if (!document.getElementById("dmate")) {
         mainFlow();
 
         // Send button was clicked
-        document.getElementById('datepal-send-button').onclick = function () {
+        document.getElementById('dmate-send-button').onclick = function () {
             sendClick();
         };
         // New idea button was clicked
-        document.getElementById('datepal-new-idea').onclick = function () {
+        document.getElementById('dmate-new-idea').onclick = function () {
             getNewIdeaClick();
         };
 
