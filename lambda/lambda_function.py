@@ -1,6 +1,7 @@
 import json
 import os
 import openai
+from ua_parser import user_agent_parser
 from typing import List, Dict, Tuple
 
 
@@ -23,6 +24,10 @@ CLIENT_USER_NAME = "User"
 USER_ATTRIBUTES = "flirty, funny, clever, mysterious, and kind"
 USER_GOAL = "to get a date"
 TAIL_EXCHANGES = 4
+
+
+class UserAgentVerificationError(Exception):
+    pass
 
 
 def list_of_items_to_grammatical_text(items: List[str]) -> str:
@@ -63,10 +68,10 @@ def create_prompt(
     )
 
 
-def respond(err, res=None) -> Dict:
+def respond(res) -> Dict:
     return {
-        "statusCode": "400" if err else "200",
-        "body": err.message if err else json.dumps(res),
+        "statusCode": "200",
+        "body": json.dumps(res),
         "headers": {
             "Content-Type": "application/json",
         },
@@ -185,7 +190,17 @@ def format_messages(
     return messages
 
 
+def verify_user_agent(user_agent: str):
+    if user_agent_parser.Parse(user_agent)["user_agent"]["family"] != "Chrome":
+        raise UserAgentVerificationError(
+            "User agent '{}' failed verification".format(user_agent)
+        )
+
+
 def lambda_handler(event: Dict, context):
+    print(event)
+    verify_user_agent(event["requestContext"]["http"]["userAgent"])
+
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
     payload = json.loads(event["body"])
@@ -198,5 +213,4 @@ def lambda_handler(event: Dict, context):
         payload["match_interests"],
         payload["messages"],
     )
-
-    return respond(None, suggestions)
+    return respond(suggestions)
