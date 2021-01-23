@@ -198,7 +198,6 @@ def verify_user_agent(user_agent: str):
 
 
 def lambda_handler(event: Dict, context):
-    print(event)
     verify_user_agent(event["requestContext"]["http"]["userAgent"])
 
     openai.api_key = os.environ["OPENAI_API_KEY"]
