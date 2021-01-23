@@ -1,6 +1,8 @@
 .DS_Store
 .mypy_cache
+__pycache__/
 */venv
+venv
 */build
 *.swp
 .vim

@@ -19,3 +19,26 @@ const MATCH_INERESTS_XPATH  = "//div[@tabindex='-1'][interestIdex]";
 // General
 const SUPPORT_ADDRESS = "dmate.contact@gmail.com"
 const SUPPORT_SUBJECT = "I need help with DMate"
+const RECAPTCHA_KEY   = "XXXX"
+
+const THIKNING_SENTENCES = [
+    "Trying to be clever",
+    "Trying to be mysterious",
+    "Trying not to sound like a je**",
+    "Doing the heavy lifting",
+    "Testing your patience",
+    "Counting backward from Infinity",
+    "Calculating the next unknown prime number",
+    "Baking cookies",
+    "Spinning the wheel of fortune",
+    "Calling the quantum computer for help",
+    "Building tension",
+    "Convincing AI not to turn evil",
+    "Computing the secret to life, the universe, and everything",
+    "Activating conscience simulation",
+    "Imagining elevator music",
+    "Patience! This is difficult, you know",
+    "You are number 2843684714 in the queue",
+    "Not judging",
+    "Adjusting for preferences"
+]
