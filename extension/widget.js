@@ -245,22 +245,22 @@ function getWidget() {
         <button id="dmate-send-button" class="dmate-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($dmate-send-gradient):h::b C(#fff):h Fw($semibold) BdEnd Bdc($c-divider) W(50%) focus-button-style" disabled>{SEND_BUTTON_TEXT}</button>
 
         <a class="support_button" href="mailto:{SUPPORT_ADDRESS}?subject={SUPPORT_SUBJECT}" target="_blank" rel="nofollow noopener">
-        <i class="fas fa-info-circle"></i>
+        <i class="fas fa-exclamation-triangle"></i>
         </a>
     </div>
 
     <style>
         .support_button {
-          color: #3ca4ff;
+          color: #ff7854;
           text-transform: uppercase;
           text-decoration: none;
           background: #e0e4e8;
-          padding: 8px 8px 5px 8px;
-          border-radius: 20px;
+          padding: 10px;
+          border-radius: 100%;
           display: inline-block;
           border: none;
           transition: all 0.4s ease 0s;
-          font-size: 20px;
+          font-size: 14px;
           margin-left: 12px;
         }
         .dmate-button-right-wrapper{

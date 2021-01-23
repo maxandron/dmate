@@ -88,17 +88,21 @@
         background-color: #3b5998
     }
     .support_button {
-        color: #3ca4ff;
+        float: right;
+        margin-top: 10px;
+        color: #ff7854;
         text-transform: uppercase;
         text-decoration: none;
-        background: transparent;
-        padding: 8px 8px 5px 8px;
+        background: #e0e4e8;
+        padding: 10px;
+        border-radius: 100%;
         display: inline-block;
         border: none;
         transition: all 0.4s ease 0s;
-        font-size: 32px;
-        float: right;
-        margin-top: 10px;
+        font-size: 14px;
+    }
+    .support_button:hover{
+        color: #ff7854;
     }
     </style>
 
@@ -124,7 +128,7 @@
                         <!-- <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div> -->
                     </form>
                     <a id="support-button" class="support_button" href="mailto:{SUPPORT_ADDRESS}?subject={SUPPORT_SUBJECT}" target="_blank" rel="nofollow noopener">
-                        <i class="fas fa-info-circle"></i>
+                        <i class="fas fa-exclamation-triangle"></i>
                     </a>
                 </div>
             </div>
