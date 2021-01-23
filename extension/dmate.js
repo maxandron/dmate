@@ -71,22 +71,23 @@ function getNewIdeaClick() {
     document.getElementById('ideas-block').style.display = "none";
 
     // Change pick button
-    var sendButon = document.getElementById('dmate-send-button')
+    let sendButon = document.getElementById('dmate-send-button')
     sendButon.disabled = true;
     sendButon.classList.remove("pick-active");
 
     // Change new idea button
-    var newIdeaButon = document.getElementById('dmate-new-idea')
+    let newIdeaButon = document.getElementById('dmate-new-idea')
     newIdeaButon.disabled = true;
     newIdeaButon.classList.remove("new-idea-active");
 
     // Get data
-    console.log(JSON.parse(localStorage.getItem('currentMatchInterests')))
-    var payload = {
+    // console.log(JSON.parse(localStorage.getItem('currentMatchInterests')))
+    let payload = {
         'messages': getConversationMessage(),
         'match_name': localStorage.getItem('currentMatchName'),
         'match_interests': JSON.parse(localStorage.getItem('currentMatchInterests')),
-        'version': chrome.runtime.getManifest()['version']
+        'version': chrome.runtime.getManifest()['version'],
+        'recaptcha_token': document.getElementById("recaptchaToken").value
     };
 
     console.log(payload);
@@ -157,9 +158,9 @@ function getInterests() {
 
         if (currentXpath) {
             interests.push(currentXpath.innerHTML);
-            console.log(currentXpath.innerHTML);
+            // console.log(currentXpath.innerHTML);
         } else {
-            console.log(interests);
+            // console.log(interests);
             return interests;
         }
 
@@ -210,9 +211,21 @@ waitForEl(function () {
         document.getElementById('dmate-send-button').onclick = function () {
             sendClick();
         };
+
         // New idea button was clicked
         document.getElementById('dmate-new-idea').onclick = function () {
-            getNewIdeaClick();
+
+            var reCaptchaLoad = document.createElement('script');
+            reCaptchaLoad.type = 'text/javascript';
+            reCaptchaLoad.text = "grecaptcha.ready(function(){grecaptcha.execute('" + RECAPTCHA_KEY + "', {action: 'submit'}).then(function(token) {document.getElementById('recaptchaToken').value = token;});});";
+            reCaptchaLoad.onload = function() {
+                this.parentNode.removeChild(this);
+            };
+            (document.head || document.documentElement).appendChild(reCaptchaLoad);
+            
+            setTimeout(function () {
+                getNewIdeaClick();
+            }, 1000);
         };
 
     }

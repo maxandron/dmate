@@ -25,6 +25,7 @@
             "run_at": "document_end",
             "js": [
                 "config.js",
+                "loadrecaptcha.js",
                 "widget.js",
                 "helpers.js",
                 "dmate.js"

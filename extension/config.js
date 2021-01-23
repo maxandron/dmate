@@ -19,3 +19,4 @@ const MATCH_INERESTS_XPATH  = "//div[@tabindex='-1'][interestIdex]";
 // General
 const SUPPORT_ADDRESS = "dmate.contact@gmail.com"
 const SUPPORT_SUBJECT = "I need help with DMate"
+const RECAPTCHA_KEY   = "6LdzJTkaAAAAADmOgvzb-a2o3w2T9xZo0gzXYAsb"

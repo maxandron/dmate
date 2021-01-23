@@ -238,9 +238,10 @@ function getWidget() {
         }
     }
     </style>
-    
+
     <div class="CenterAlign Fxs(0) Fz($xs) dmate-button-right-wrapper">
         <button id="dmate-new-idea" class="dmate-buttons new-idea-active H(72px) Tt(u) Lts($ls-m) StyledButton Bg($primary-gradient):h::b C(#fff):h Fw($semibold) focus-button-style">{GENNERATE_BUTTON_TEXT}</button>
+        <input type="hidden" name="recaptchaToken" id="recaptchaToken" value="kaki" />
 
         <button id="dmate-send-button" class="dmate-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($dmate-send-gradient):h::b C(#fff):h Fw($semibold) BdEnd Bdc($c-divider) W(50%) focus-button-style" disabled>{SEND_BUTTON_TEXT}</button>
 
@@ -313,6 +314,7 @@ widgetHtml = widgetHtml.replace("{GENNERATE_BUTTON_TEXT}", GENNERATE_BUTTON_TEXT
 widgetHtml = widgetHtml.replace("{GENNERATE_BUTTON_COLOR}", GENNERATE_BUTTON_COLOR);
 widgetHtml = widgetHtml.replace("{SUPPORT_ADDRESS}", SUPPORT_ADDRESS);
 widgetHtml = widgetHtml.replace("{SUPPORT_SUBJECT}", SUPPORT_SUBJECT);
+widgetHtml = widgetHtml.replace("{RECAPTCHA_KEY}", RECAPTCHA_KEY);
 
 return widgetHtml;
 }
