@@ -6,10 +6,10 @@ build: clean
 	cd build/requirements && zip -r ../package.zip .
 
 deploy: build
-	aws lambda update-function-code --function-name datepal-api --zip-file fileb://build/package.zip
+	aws lambda update-function-code --function-name dmate-api --zip-file fileb://build/package.zip
 
 logs:
-	aws logs tail /aws/lambda/datepal-api --format short
+	aws logs tail /aws/lambda/dmate-api --format short
 
 clean:
 	rm -rf ./build/*

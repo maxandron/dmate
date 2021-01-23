@@ -1,15 +1,15 @@
 function getWidget() {
     let widgetHtml = `
-    <span class="datepal-name">Datepal:</span>
+    <span class="dmate-name">DMate:</span>
     <div style="margin-top: 5px;">
-        <span id="datepal-suggestion">
+        <span id="dmate-suggestion">
             You look very interesting...
         </span>
         <div id="loader-text"></div>
     </div>
 
     <style>
-    .datepal-name{
+    .dmate-name{
         background-color: #fd5068;
         margin-right: 6px;
         border-radius: 5px;
@@ -20,7 +20,7 @@ function getWidget() {
         text-transform: uppercase;
     }
 
-    #datepal-suggestion{
+    #dmate-suggestion{
         display: inline-block;
         padding: .35em .65em;
         font-weight: 700;
@@ -71,21 +71,21 @@ function getWidget() {
     </style>
     
     <div class="CenterAlign Pos(r) Fxs(0) Z(1) Fz($xs) Bgc($c-bg) Fw($semibold) Cur(p) BdT Bdc($c-divider) C($c-secondary)" style="height: 40px;position: absolute;right: 28px;bottom: 9px;width: 212px;">
-        <button id="datepal-new-idea" class="datepal-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($primary-gradient):h::b C(#fff):h Fw($semibold) focus-button-style">{GENNERATE_BUTTON_TEXT}</button>
-        <button id="datepal-send-button" class="datepal-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($datepal-send-gradient):h::b C(#fff):h Fw($semibold) BdEnd Bdc($c-divider) W(50%) focus-button-style">{SEND_BUTTON_TEXT}</button>
+        <button id="dmate-new-idea" class="dmate-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($primary-gradient):h::b C(#fff):h Fw($semibold) focus-button-style">{GENNERATE_BUTTON_TEXT}</button>
+        <button id="dmate-send-button" class="dmate-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($dmate-send-gradient):h::b C(#fff):h Fw($semibold) BdEnd Bdc($c-divider) W(50%) focus-button-style">{SEND_BUTTON_TEXT}</button>
     </div>
 
     <style>
-        #datepal-send-button{
+        #dmate-send-button{
             display: none;
         }
-        #datepal-send-button:hover {
+        #dmate-send-button:hover {
             {SEND_BUTTON_COLOR}
         }
-        .datepal-buttons{
+        .dmate-buttons{
             height: 40px;
         }
-        .datepal-wrapper{
+        .dmate-wrapper{
             width: 100%;
             height: 60px;
             padding: 17px;
