@@ -75,6 +75,11 @@ function getNewIdeaClick() {
     sendButon.disabled = true;
     sendButon.classList.remove("pick-active");
 
+    // Change new idea button
+    var newIdeaButon = document.getElementById('dmate-new-idea')
+    newIdeaButon.disabled = true;
+    newIdeaButon.classList.remove("new-idea-active");
+
     // Get data
     console.log(JSON.parse(localStorage.getItem('currentMatchInterests')))
     var payload = {
@@ -121,6 +126,11 @@ function setIdeas(ideas) {
     var sendButon = document.getElementById('dmate-send-button')
     sendButon.disabled = false;
     sendButon.classList.add("pick-active");
+
+    // Change new idea button
+    var newIdeaButon = document.getElementById('dmate-new-idea')
+    newIdeaButon.disabled = false;
+    newIdeaButon.classList.add("new-idea-active");
 }
 
 function sendClick() {

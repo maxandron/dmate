@@ -240,7 +240,7 @@ function getWidget() {
     </style>
     
     <div class="CenterAlign Fxs(0) Fz($xs) dmate-button-right-wrapper">
-        <button id="dmate-new-idea" class="dmate-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($primary-gradient):h::b C(#fff):h Fw($semibold) focus-button-style">{GENNERATE_BUTTON_TEXT}</button>
+        <button id="dmate-new-idea" class="dmate-buttons new-idea-active H(72px) Tt(u) Lts($ls-m) StyledButton Bg($primary-gradient):h::b C(#fff):h Fw($semibold) focus-button-style">{GENNERATE_BUTTON_TEXT}</button>
 
         <button id="dmate-send-button" class="dmate-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($dmate-send-gradient):h::b C(#fff):h Fw($semibold) BdEnd Bdc($c-divider) W(50%) focus-button-style" disabled>{SEND_BUTTON_TEXT}</button>
 
@@ -273,13 +273,12 @@ function getWidget() {
             color: white;
         }
         #dmate-new-idea{
+            color: white;
+            cursor: default;
             width: 130px;
             border-radius: 22px;
             background-color: #e0e4e9;
             margin-right: 12px;
-        }
-        #dmate-new-idea:hover{
-          {GENNERATE_BUTTON_COLOR}
         }
         .pick-active {
           color: black !important;
@@ -287,6 +286,14 @@ function getWidget() {
         }
         .pick-active:hover {
           {SEND_BUTTON_COLOR}
+          color: white !important;
+        }
+        .new-idea-active{
+          color: black !important;
+          cursor: pointer !important;
+        }
+        .new-idea-active:hover{
+          {GENNERATE_BUTTON_COLOR}
           color: white !important;
         }
         .dmate-buttons{
