@@ -80,26 +80,41 @@ function getNewIdeaClick() {
     newIdeaButon.disabled = true;
     newIdeaButon.classList.remove("new-idea-active");
 
-    // Get data
-    // console.log(JSON.parse(localStorage.getItem('currentMatchInterests')))
-    let payload = {
-        'messages': getConversationMessage(),
-        'match_name': localStorage.getItem('currentMatchName'),
-        'match_interests': JSON.parse(localStorage.getItem('currentMatchInterests')),
-        'version': chrome.runtime.getManifest()['version'],
-        'recaptcha_token': document.getElementById("recaptchaToken").value
-    };
+    getRecaptchaToken(function(token) {
+        // Get data
+        // console.log(JSON.parse(localStorage.getItem('currentMatchInterests')))
+        let payload = {
+            'messages': getConversationMessage(),
+            'match_name': localStorage.getItem('currentMatchName'),
+            'match_interests': JSON.parse(localStorage.getItem('currentMatchInterests')),
+            'version': chrome.runtime.getManifest()['version'],
+            'recaptcha_token': token
+        };
 
-    console.log(payload);
+        console.log(payload);
 
-    chrome.runtime.sendMessage(
-        {
-            contentScriptQuery: 'dmateGenerate',
-            data: JSON.stringify(payload),
-        }, function (response) {
-            console.log(response);
-            setIdeas(response);
-        });
+        chrome.runtime.sendMessage(
+            {
+                contentScriptQuery: 'dmateGenerate',
+                data: JSON.stringify(payload),
+            }, function (response) {
+                console.log(response);
+                setIdeas(response);
+            });
+    });
+
+}
+
+function getRecaptchaToken(callback){
+    let token = "none";
+    token = document.getElementById('recaptchaToken').value;
+    if (token != "none") {
+        document.getElementById('recaptchaToken').value = "none";
+        callback(token);
+    } else {
+        // todo: check that getRecaptchaToken was not called more that X times
+        setTimeout(getRecaptchaToken, 100, callback);
+    }
 }
 
 function setIdeas(ideas) {
@@ -196,9 +211,11 @@ var waitForEl = function (callback) {
     if (isLoaded()) {
         callback();
     }
-    setTimeout(function () {
-        waitForEl(callback);
-    }, 500);
+    else{
+        setTimeout(function () {
+            waitForEl(callback);
+        }, 500);
+    }
 };
 
 var dmateClasses = ["dmate-wrapper", "D(f)", "W(100%)", "BdT", "Bdtc($c-divider)", "Bgc(#fff)", "Pos(r)"];
@@ -223,9 +240,7 @@ waitForEl(function () {
             };
             (document.head || document.documentElement).appendChild(reCaptchaLoad);
             
-            setTimeout(function () {
-                getNewIdeaClick();
-            }, 1000);
+            getNewIdeaClick();
         };
 
     }
