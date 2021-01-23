@@ -2,6 +2,7 @@ import json
 import os
 import openai
 from ua_parser import user_agent_parser
+import requests
 from typing import List, Dict, Tuple
 
 
@@ -25,8 +26,14 @@ USER_ATTRIBUTES = "flirty, funny, clever, mysterious, and kind"
 USER_GOAL = "to get a date"
 TAIL_EXCHANGES = 4
 
+RECAPTCHA_SECRET = "6LdzJTkaAAAAANxLXC81NbBIXfyvsGR_mZCuBhvu"
+
 
 class UserAgentVerificationError(Exception):
+    pass
+
+
+class RecaptchaVerificationError(Exception):
     pass
 
 
@@ -197,12 +204,23 @@ def verify_user_agent(user_agent: str):
         )
 
 
+def verify_captcha(token: str):
+    res = requests.post(
+        "https://www.google.com/recaptcha/api/siteverify",
+        {"secret": RECAPTCHA_SECRET, "response": token},
+    ).json()
+    print(res)
+    if not res['success'] or res['score'] < 0.5:
+        raise RecaptchaVerificationError(token, res)
+
+
 def lambda_handler(event: Dict, context):
+    payload = json.loads(event["body"])
+
     verify_user_agent(event["requestContext"]["http"]["userAgent"])
+    verify_captcha(payload["recaptcha_token"])
 
     openai.api_key = os.environ["OPENAI_API_KEY"]
-
-    payload = json.loads(event["body"])
 
     suggestions = fetch_suggestions(
         SERVER_USER_NAME,
