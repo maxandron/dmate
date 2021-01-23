@@ -1,6 +1,6 @@
 .DS_Store
 .mypy_cache
-lambda/venv
-lambda/build
+*/venv
+*/build
 *.swp
 .vim

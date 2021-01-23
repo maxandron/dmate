@@ -1,5 +1,5 @@
 // URLs
-let DMATE_BACKEND_URL = 'https://5d34dd7278.execute-api.us-east-2.amazonaws.com/default/dmate-api';
+let DMATE_BACKEND_URL = 'https://ehkbala5gi.execute-api.us-east-2.amazonaws.com/default/dmate-api';
 
 // Widget Design
 let SEND_BUTTON_TEXT        = "Pick";
