@@ -115,7 +115,7 @@ function getWidget() {
 #ideas-block{
     border: solid 1px #e0e4e9;
     border-radius: 8px;
-    width: 36vw;
+    width: 32vw;
 }
 #ideas-block {
   select {
@@ -129,42 +129,42 @@ function getWidget() {
 
 @media(max-width:1700px) {
   #ideas-block{
-    width: 34vw;
+    width: 30vw;
   }
 }
 @media(max-width:1600px) {
   #ideas-block{
-    width: 32vw;
+    width: 28vw;
   }
 }
 @media(max-width:1500px) {
   #ideas-block{
-    width: 30vw;
+    width: 26vw;
   }
 }
 @media(max-width:1400px) {
   #ideas-block{
-    width: 28vw;
+    width: 24vw;
   }
 }
 @media(max-width:1300px) {
   #ideas-block{
-    width: 24vw;
+    width: 22vw;
   }
 }
 @media(max-width:1200px) {
   #ideas-block{
-    width: 21vw;
+    width: 19vw;
   }
 }
 @media(max-width:1100px) {
   #ideas-block{
-    width: 20vw;
+    width: 17vw;
   }
 }
 @media(max-width:1010px) {
   #ideas-block{
-    width: 36vw;
+    width: 32vw;
   }
 }
 
@@ -241,10 +241,28 @@ function getWidget() {
     
     <div class="CenterAlign Fxs(0) Fz($xs) datepal-button-right-wrapper">
         <button id="datepal-new-idea" class="datepal-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($primary-gradient):h::b C(#fff):h Fw($semibold) focus-button-style">{GENNERATE_BUTTON_TEXT}</button>
+
         <button id="datepal-send-button" class="datepal-buttons H(72px) Tt(u) Lts($ls-m) StyledButton Bg($datepal-send-gradient):h::b C(#fff):h Fw($semibold) BdEnd Bdc($c-divider) W(50%) focus-button-style" disabled>{SEND_BUTTON_TEXT}</button>
+
+        <a class="support_button" href="mailto:{SUPPORT_ADDRESS}?subject={SUPPORT_SUBJECT}" target="_blank" rel="nofollow noopener">
+        <i class="fas fa-info-circle"></i>
+        </a>
     </div>
 
     <style>
+        .support_button {
+          color: #3ca4ff;
+          text-transform: uppercase;
+          text-decoration: none;
+          background: #e0e4e8;
+          padding: 8px 8px 5px 8px;
+          border-radius: 20px;
+          display: inline-block;
+          border: none;
+          transition: all 0.4s ease 0s;
+          font-size: 20px;
+          margin-left: 12px;
+        }
         .datepal-button-right-wrapper{
             position: absolute;right: 28px;bottom: 9px;
         }
@@ -255,7 +273,7 @@ function getWidget() {
             color: white;
         }
         #datepal-new-idea{
-            width: 114px;
+            width: 130px;
             border-radius: 22px;
             background-color: #e0e4e9;
             margin-right: 12px;
@@ -286,6 +304,8 @@ widgetHtml = widgetHtml.replace("{SEND_BUTTON_TEXT}", SEND_BUTTON_TEXT);
 widgetHtml = widgetHtml.replace("{SEND_BUTTON_COLOR}", SEND_BUTTON_COLOR);
 widgetHtml = widgetHtml.replace("{GENNERATE_BUTTON_TEXT}", GENNERATE_BUTTON_TEXT);
 widgetHtml = widgetHtml.replace("{GENNERATE_BUTTON_COLOR}", GENNERATE_BUTTON_COLOR);
+widgetHtml = widgetHtml.replace("{SUPPORT_ADDRESS}", SUPPORT_ADDRESS);
+widgetHtml = widgetHtml.replace("{SUPPORT_SUBJECT}", SUPPORT_SUBJECT);
 
 return widgetHtml;
 }
