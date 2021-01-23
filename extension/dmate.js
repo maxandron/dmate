@@ -171,7 +171,7 @@ function getInitialData() {
     localStorage.setItem('currentMatchName', getElementByXpath(MATCH_NAME_XPATH).innerHTML);
     localStorage.setItem('currentMatchInterests', JSON.stringify(getInterests()));
 
-    consoleLogMessage(getConversationMessage());
+    // consoleLogMessage(getConversationMessage());
 }
 
 function mainFlow() {
