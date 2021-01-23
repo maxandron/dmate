@@ -7,6 +7,7 @@
         "activeTab",
         "storage"
     ],
+    "content_security_policy": "script-src 'self' https://apis.google.com/js/platform.js; object-src 'self'",
     "options_page": "options.html",
     "background": {
         "scripts": [
@@ -32,24 +33,26 @@
     ],
     "web_accessible_resources": [
         "datapal.html",
+        "popup.html",
         "*.jpg",
         "*.JPG",
         "*.png"
     ],
-    "page_action": {
+    "browser_action": {
         "default_popup": "popup.html",
+        "default_title": "ChatPal",
         "default_icon": {
-            "16": "images/get_started16.png",
-            "32": "images/get_started32.png",
-            "48": "images/get_started48.png",
-            "128": "images/get_started128.png"
+            "16": "images/penguin16.png",
+            "32": "images/penguin32.png",
+            "48": "images/penguin48.png",
+            "128": "images/penguin128.png"
         }
     },
     "icons": {
-        "16": "images/get_started16.png",
-        "32": "images/get_started32.png",
-        "48": "images/get_started48.png",
-        "128": "images/get_started128.png"
+        "16": "images/penguin16.png",
+        "32": "images/penguin32.png",
+        "48": "images/penguin48.png",
+        "128": "images/penguin128.png"
     },
     "manifest_version": 2
 }
