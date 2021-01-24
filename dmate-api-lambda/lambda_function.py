@@ -71,20 +71,19 @@ def create_prompt(
         )
     
     formatted_goal = ""
-    if SET_GOAL:
-        goal_text = GOAL_FORMAT.format(
+    if set_goal:
+        formatted_goal = GOAL_FORMAT.format(
             user_name=user_name,
             match_name=match_name,
             user_goal=user_goal
         )
-        
 
     return PROMPT_FORMAT.format(
         user_name=user_name,
         match_name=match_name,
         attributes=attributes,
-        goal=goal_text,
         interests=formatted_interests,
+        goal=formatted_goal,
         messages="\n".join(messages),
     )
 
