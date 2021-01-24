@@ -211,11 +211,9 @@ var waitForEl = function (callback) {
     if (isLoaded()) {
         callback();
     }
-    else{
-        setTimeout(function () {
-            waitForEl(callback);
-        }, 500);
-    }
+    setTimeout(function () {
+        waitForEl(callback);
+    }, 500);
 };
 
 var dmateClasses = ["dmate-wrapper", "D(f)", "W(100%)", "BdT", "Bdtc($c-divider)", "Bgc(#fff)", "Pos(r)"];

@@ -11,19 +11,23 @@ PROMPT_FORMAT = (
     "between a {user_name} and {match_name}. "
     "The {user_name} is {attributes}. "
     "{interests}"
-    "The goal of the {user_name} is {goal} with {match_name} "
-    "without being too pushy."
+    "{goal}"
     "\n###\n{messages}\n{user_name}:"
+)
+GOAL_FORMAT = (
+    "The goal of the {user_name} is {user_goal} with {match_name} "
+    "without being too pushy."
 )
 
 INTERESTS_FORMAT = "{match_name}'s interests include {interests}. "
 SINGLE_INTEREST_FORMAT = "{match_name} is interested in {interests}. "
 
-OPTIONS_AMOUNT = 5
-SERVER_USER_NAME = "Clever Man"
+OPTIONS_AMOUNT = 3
+SERVER_USER_NAME = "Man"
 CLIENT_USER_NAME = "User"
 USER_ATTRIBUTES = "flirty, funny, clever, mysterious, and kind"
-USER_GOAL = "to get a date"
+USER_GOAL       = "to get a date"
+SET_GOAL        = False
 TAIL_EXCHANGES = 4
 
 RECAPTCHA_SECRET = "6LdzJTkaAAAAANxLXC81NbBIXfyvsGR_mZCuBhvu"
@@ -49,12 +53,13 @@ def create_prompt(
     user_name: str,
     match_name: str,
     attributes: str,
-    goal: str,
+    set_goal: bool,
+    user_goal: str,
     interests: List[str],
     messages: List[str],
 ) -> str:
-    formatted_interests = ""
 
+    formatted_interests = ""
     if interests:
         if len(interests) == 1:
             interests_format = SINGLE_INTEREST_FORMAT
@@ -64,12 +69,21 @@ def create_prompt(
             match_name=match_name,
             interests=list_of_items_to_grammatical_text(interests),
         )
+    
+    formatted_goal = ""
+    if SET_GOAL:
+        goal_text = GOAL_FORMAT.format(
+            user_name=user_name,
+            match_name=match_name,
+            user_goal=user_goal
+        )
+        
 
     return PROMPT_FORMAT.format(
         user_name=user_name,
         match_name=match_name,
         attributes=attributes,
-        goal=goal,
+        goal=goal_text,
         interests=formatted_interests,
         messages="\n".join(messages),
     )
@@ -136,7 +150,8 @@ def fetch_suggestions(
     user_name: str,
     match_name: str,
     attributes: str,
-    goal: str,
+    set_goal: bool,
+    user_goal: str,
     interests: List[str],
     messages: List[Tuple[str, str]],
 ) -> List[str]:
@@ -147,7 +162,8 @@ def fetch_suggestions(
         user_name,
         match_name,
         attributes,
-        goal,
+        set_goal,
+        user_goal,
         interests,
         format_messages(user_name, match_name, messages),
     )
@@ -226,6 +242,7 @@ def lambda_handler(event: Dict, context):
         SERVER_USER_NAME,
         payload["match_name"],
         USER_ATTRIBUTES,
+        SET_GOAL,
         USER_GOAL,
         payload["match_interests"],
         payload["messages"],
