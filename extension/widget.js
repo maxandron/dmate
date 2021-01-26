@@ -177,6 +177,7 @@ function getWidget() {
     </div>
 
     <div id="loader-text"></div>
+    <input type="hidden" id="thinking-sentencte" value="{THINKING_SENTENCE}" />
 
     <style>
     .dmate-name{
@@ -219,24 +220,27 @@ function getWidget() {
         position: relative;
     }
     
-    #loader-text:after {
-        content: 'Thinking';
-        animation: load 2s linear infinite;
-    }
-    @keyframes load {
-        0% {
-        content: 'Thinking';
-        }
-        33% {
-        content: 'Thinking.';
-        }
-        67% {
-        content: 'Thinking..';
-        }
-        100% {
-        content: 'Thinking...';
-        }
-    }
+    </style>
+
+    <style id="loading_style">
+      #loader-text:after {
+          content: '{THINKING_SENTENCE}';
+          animation: load 2s linear infinite;
+      }
+      @keyframes load {
+          0% {
+          content: '{THINKING_SENTENCE}';
+          }
+          33% {
+          content: '{THINKING_SENTENCE}.';
+          }
+          67% {
+          content: '{THINKING_SENTENCE}..';
+          }
+          100% {
+          content: '{THINKING_SENTENCE}...';
+          }
+      }
     </style>
 
     <div class="CenterAlign Fxs(0) Fz($xs) dmate-button-right-wrapper">
@@ -308,13 +312,17 @@ function getWidget() {
     </style>
 `;
 
-widgetHtml = widgetHtml.replace("{SEND_BUTTON_TEXT}", SEND_BUTTON_TEXT);
-widgetHtml = widgetHtml.replace("{SEND_BUTTON_COLOR}", SEND_BUTTON_COLOR);
-widgetHtml = widgetHtml.replace("{GENNERATE_BUTTON_TEXT}", GENNERATE_BUTTON_TEXT);
-widgetHtml = widgetHtml.replace("{GENNERATE_BUTTON_COLOR}", GENNERATE_BUTTON_COLOR);
-widgetHtml = widgetHtml.replace("{SUPPORT_ADDRESS}", SUPPORT_ADDRESS);
-widgetHtml = widgetHtml.replace("{SUPPORT_SUBJECT}", SUPPORT_SUBJECT);
-widgetHtml = widgetHtml.replace("{RECAPTCHA_KEY}", RECAPTCHA_KEY);
+widgetHtml = widgetHtml.split("{SEND_BUTTON_TEXT}").join(SEND_BUTTON_TEXT);
+widgetHtml = widgetHtml.split("{SEND_BUTTON_COLOR}").join(SEND_BUTTON_COLOR);
+widgetHtml = widgetHtml.split("{GENNERATE_BUTTON_TEXT}").join(GENNERATE_BUTTON_TEXT);
+widgetHtml = widgetHtml.split("{GENNERATE_BUTTON_COLOR}").join(GENNERATE_BUTTON_COLOR);
+widgetHtml = widgetHtml.split("{SUPPORT_ADDRESS}").join(SUPPORT_ADDRESS);
+widgetHtml = widgetHtml.split("{SUPPORT_SUBJECT}").join(SUPPORT_SUBJECT);
+widgetHtml = widgetHtml.split("{RECAPTCHA_KEY}").join(RECAPTCHA_KEY);
+
+// Thinking Sentence
+let sentence = THIKNING_SENTENCES[Math.floor(Math.random() * THIKNING_SENTENCES.length)];
+widgetHtml = widgetHtml.split("{THINKING_SENTENCE}").join(sentence);
 
 return widgetHtml;
 }

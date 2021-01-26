@@ -8,14 +8,14 @@ from typing import List, Dict, Tuple
 
 PROMPT_FORMAT = (
     "The following is a Tinder conversation "
-    "between a {user_name} and {match_name}. "
-    "The {user_name} is {attributes}. "
+    "between a man called {user_name}, and a woman called {match_name}. "
+    "{user_name} is {attributes}. "
     "{interests}"
     "{goal}"
     "\n###\n{messages}\n{user_name}:"
 )
 GOAL_FORMAT = (
-    "The goal of the {user_name} is {user_goal} with {match_name} "
+    "The goal of {user_name} is {user_goal} with {match_name} "
     "without being too pushy."
 )
 
@@ -23,11 +23,11 @@ INTERESTS_FORMAT = "{match_name}'s interests include {interests}. "
 SINGLE_INTEREST_FORMAT = "{match_name} is interested in {interests}. "
 
 OPTIONS_AMOUNT = 3
-SERVER_USER_NAME = "Man"
-CLIENT_USER_NAME = "User"
-USER_ATTRIBUTES = "flirty, funny, clever, mysterious, and kind"
+SERVER_USER_NAME = "Jonathan"
+CLIENT_USER_NAME = "{match_name}"
+USER_ATTRIBUTES = "single, flirty, funny, clever, and kind"
 USER_GOAL       = "to get a date"
-SET_GOAL        = False
+SET_GOAL        = True
 TAIL_EXCHANGES = 4
 
 RECAPTCHA_SECRET = "6LdzJTkaAAAAANxLXC81NbBIXfyvsGR_mZCuBhvu"

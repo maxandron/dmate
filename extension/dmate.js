@@ -64,6 +64,21 @@ function getConversationMessage() {
     return orderedMessages;
 }
 
+function changeThinkingSentece(){
+    // Get current sentence and style
+    let currentSentenceElement = document.getElementById("thinking-sentencte");
+    let currentSentence = currentSentenceElement.value;
+    let currentStyle = document.getElementById("loading_style");
+    
+    // Generate new sentence
+    let newSentence = THIKNING_SENTENCES[Math.floor(Math.random() * THIKNING_SENTENCES.length)];
+    let newStyle = currentStyle.innerHTML.split(currentSentence).join(newSentence);
+
+    // Set them on the page
+    currentSentenceElement.value = newSentence;
+    currentStyle.innerHTML = newStyle;
+}
+
 function getNewIdeaClick() {
 
     // Show loading
@@ -90,6 +105,7 @@ function getNewIdeaClick() {
             'version': chrome.runtime.getManifest()['version'],
             'recaptcha_token': token
         };
+        // TODO: give real token in prod, It's for debugging to save OpenAI Credits
 
         console.log(payload);
 
@@ -99,6 +115,7 @@ function getNewIdeaClick() {
                 data: JSON.stringify(payload),
             }, function (response) {
                 console.log(response);
+                changeThinkingSentece();
                 setIdeas(response);
             });
     });
