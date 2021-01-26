@@ -26,8 +26,8 @@ OPTIONS_AMOUNT = 3
 SERVER_USER_NAME = "Jonathan"
 CLIENT_USER_NAME = "{match_name}"
 USER_ATTRIBUTES = "single, flirty, funny, clever, and kind"
-USER_GOAL       = "to get a date"
-SET_GOAL        = True
+USER_GOAL = "to get a date"
+SET_GOAL = True
 TAIL_EXCHANGES = 4
 
 RECAPTCHA_SECRET = "6LdzJTkaAAAAANxLXC81NbBIXfyvsGR_mZCuBhvu"
@@ -69,13 +69,11 @@ def create_prompt(
             match_name=match_name,
             interests=list_of_items_to_grammatical_text(interests),
         )
-    
+
     formatted_goal = ""
     if set_goal:
         formatted_goal = GOAL_FORMAT.format(
-            user_name=user_name,
-            match_name=match_name,
-            user_goal=user_goal
+            user_name=user_name, match_name=match_name, user_goal=user_goal
         )
 
     return PROMPT_FORMAT.format(
@@ -139,10 +137,7 @@ def sanitize_response(choices: Dict) -> List[str]:
     sorted_options = sorted(
         choices, key=lambda x: average_logprob(x["logprobs"]["token_logprobs"])
     )
-    return [
-        option["text"].strip().split("\n")[0].strip()
-        for option in sorted_options
-    ]
+    return [option["text"].strip().split("\n")[0].strip() for option in sorted_options]
 
 
 def fetch_suggestions(
@@ -172,9 +167,7 @@ def fetch_suggestions(
     return sanitize_response(choices)
 
 
-def client_to_server_sender(
-    sender: str, user_name: str, match_name: str
-) -> str:
+def client_to_server_sender(sender: str, user_name: str, match_name: str) -> str:
     if sender == CLIENT_USER_NAME:
         return user_name
     return match_name
@@ -225,7 +218,7 @@ def verify_captcha(token: str):
         {"secret": RECAPTCHA_SECRET, "response": token},
     ).json()
     print(res)
-    if not res['success'] or res['score'] < 0.5:
+    if not res["success"] or res["score"] < 0.5:
         raise RecaptchaVerificationError(token, res)
 
 
