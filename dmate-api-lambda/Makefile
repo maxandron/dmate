@@ -1,7 +1,7 @@
 .PHONY: build clean
 
 build: clean
-	venv/bin/pip install --target build/requirements -r requirements.txt
+	venv/bin/pip install --target build/requirements -r requirements_prod.txt
 	zip -g ./build/package.zip ./lambda_function.py
 	cd build/requirements && zip -r ../package.zip .
 
