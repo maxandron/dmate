@@ -3,7 +3,7 @@ import os
 import openai
 from ua_parser import user_agent_parser
 import requests
-from typing import Sequence, Mapping, Tuple
+from typing import Sequence, Mapping, Tuple, List
 from dataclasses import dataclass
 
 
@@ -162,16 +162,29 @@ def sanitize_response(choices: Mapping) -> Sequence[str]:
     ]
 
 
+def format_messages(
+    attributes: PromptAttributes, messages: List[Tuple[str, str]]
+) -> List[str]:
+    return [
+        "{}: {}".format(
+            client_to_server_sender(
+                sender, attributes.user_name, attributes.match_name
+            ),
+            message,
+        )
+        for sender, message in messages
+    ]
+
+
 def fetch_suggestions(
     attributes: PromptAttributes, messages: Sequence[MESSAGE_TYPE]
 ) -> Sequence[str]:
     """Calls openai to receive reply suggestions and santizes the response
     Returns a list of the choices
     """
-    print(attributes)
+    last_messages = extract_last_messages(messages)
     prompt = create_prompt(
-        attributes,
-        format_messages(attributes.user_name, attributes.match_name, messages),
+        attributes, format_messages(attributes, last_messages)
     )
     print(prompt)
     stops = [attributes.user_name, attributes.match_name]
@@ -191,9 +204,7 @@ def client_to_server_sender(
     return match_name
 
 
-def format_messages(
-    user_name: str, match_name: str, messages_array: Sequence
-) -> Sequence[str]:
+def extract_last_messages(messages_array: Sequence) -> List[Tuple[str, str]]:
     """Formats the json array received from the client into what openai expects.
     Takes only the last few exchanges in the conversation
     """
@@ -212,11 +223,7 @@ def format_messages(
         elif sender != CLIENT_SIDE_USER_NAME and is_user:
             is_user = False
 
-        messages.append(
-            "{}: {}".format(
-                client_to_server_sender(sender, user_name, match_name), message
-            )
-        )
+        messages.append((sender, message))
         current_message_index -= 1
 
     messages.reverse()
@@ -250,8 +257,7 @@ def lambda_handler(event: Mapping, context):
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
     suggestions = fetch_suggestions(
-        PromptAttributes(
-            match_name=payload["match_name"], interests=interests
-        ), payload["messages"],
+        PromptAttributes(match_name=payload["match_name"], interests=interests),
+        payload["messages"],
     )
     return respond(suggestions)
