@@ -3,7 +3,7 @@ import os
 import openai
 from ua_parser import user_agent_parser
 import requests
-from typing import Iterable, Mapping
+from typing import Sequence, Mapping, Tuple
 from dataclasses import dataclass
 
 
@@ -38,6 +38,9 @@ CLIENT_SIDE_USER_NAME = "User"
 RECAPTCHA_SECRET = "6LdzJTkaAAAAANxLXC81NbBIXfyvsGR_mZCuBhvu"
 
 
+MESSAGE_TYPE = Sequence[Tuple[str, str]]
+
+
 @dataclass(frozen=True)
 class PromptAttributes:
     user_name: str = USER_NAME
@@ -47,7 +50,7 @@ class PromptAttributes:
     characteristics: str = USER_CHARACTISTICS
     set_goal: bool = SET_GOAL
     user_goal: str = USER_GOAL
-    interests: Iterable[str] = ()
+    interests: Sequence[str] = ()
 
 
 class UserAgentVerificationError(Exception):
@@ -58,7 +61,7 @@ class RecaptchaVerificationError(Exception):
     pass
 
 
-def list_of_items_to_grammatical_text(items: Iterable[str]) -> str:
+def list_of_items_to_grammatical_text(items: Sequence[str]) -> str:
     if len(items) <= 1:
         return "".join(items)
     if len(items) == 2:
@@ -66,9 +69,7 @@ def list_of_items_to_grammatical_text(items: Iterable[str]) -> str:
     return "{}, and {}".format(", ".join(items[:-1]), items[-1])
 
 
-def create_prompt(
-    attributes: PromptAttributes, messages: Iterable[str]
-) -> str:
+def create_prompt(attributes: PromptAttributes, messages: Sequence[str]) -> str:
 
     formatted_interests = ""
     if attributes.interests:
@@ -127,7 +128,7 @@ def openai_content_filter(prompt: str) -> Mapping:
     return response["choices"][0]
 
 
-def openai_gpt3(prompt: str, stops: Iterable[str]) -> Mapping:
+def openai_gpt3(prompt: str, stops: Sequence[str]) -> Mapping:
     response = openai.Completion.create(
         engine="davinci",
         prompt=prompt,
@@ -143,11 +144,11 @@ def openai_gpt3(prompt: str, stops: Iterable[str]) -> Mapping:
     return response["choices"]
 
 
-def average_logprob(logprobs: Iterable[float]) -> float:
+def average_logprob(logprobs: Sequence[float]) -> float:
     return sum(logprobs) / len(logprobs)
 
 
-def sanitize_response(choices: Mapping) -> Iterable[str]:
+def sanitize_response(choices: Mapping) -> Sequence[str]:
     """Sorts the choices according to the average logprob values of the tokens
     inside the text. Then makes sure to take only the first line
     and strip the spaces
@@ -162,8 +163,8 @@ def sanitize_response(choices: Mapping) -> Iterable[str]:
 
 
 def fetch_suggestions(
-    attributes: PromptAttributes, messages: Iterable
-) -> Iterable[str]:
+    attributes: PromptAttributes, messages: Sequence[MESSAGE_TYPE]
+) -> Sequence[str]:
     """Calls openai to receive reply suggestions and santizes the response
     Returns a list of the choices
     """
@@ -172,9 +173,8 @@ def fetch_suggestions(
         format_messages(attributes.user_name, attributes.match_name, messages),
     )
     print(prompt)
-    stops = map(
-        lambda stop: "\n" + stop, [attributes.user_name, attributes.match_name]
-    )
+    stops = [attributes.user_name, attributes.match_name]
+    stops = ["\n" + stop for stop in stops]
     choices = openai_gpt3(prompt, stops)
     print([choice["text"] for choice in choices])
     return sanitize_response(choices)
@@ -191,8 +191,8 @@ def client_to_server_sender(
 
 
 def format_messages(
-    user_name: str, match_name: str, messages_array: Iterable
-) -> Iterable[str]:
+    user_name: str, match_name: str, messages_array: Sequence
+) -> Sequence[str]:
     """Formats the json array received from the client into what openai expects.
     Takes only the last few exchanges in the conversation
     """
