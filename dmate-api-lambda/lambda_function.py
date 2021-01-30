@@ -1,8 +1,7 @@
 import json
-import os
-import openai
 from typing import Sequence, Mapping, Tuple, List
-from dataclasses import dataclass
+import dataclasses
+from gpt3 import gpt3, GPT3ChatResponse
 
 import security
 
@@ -21,7 +20,6 @@ GOAL_FORMAT = "The goal of {user_name} is {user_goal}"
 INTERESTS_FORMAT = "{match_name}'s interests include {interests}. "
 SINGLE_INTEREST_FORMAT = "{match_name} is interested in {interests}. "
 
-OPTIONS_AMOUNT = 3
 
 USER_NAME = "Jonathan"
 USER_GENDER = "man"
@@ -39,7 +37,7 @@ CLIENT_SIDE_USER_NAME = "User"
 MESSAGE_TYPE = Sequence[Tuple[str, str]]
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class PromptAttributes:
     user_name: str = USER_NAME
     user_gender: str = USER_GENDER
@@ -107,51 +105,12 @@ def respond(res) -> Mapping:
     }
 
 
-def openai_content_filter(prompt: str) -> Mapping:
-    response = openai.Completion.create(
-        engine="content-filter-alpha-c4",
-        prompt="<|endoftext|>[{}]\n--\nLabel:".format(prompt),
-        temperature=0.0,
-        max_tokens=1,
-        top_p=0,
-        logprobs=3,
-    )
-    print(response)
-    return response["choices"][0]
-
-
-def openai_gpt3(prompt: str, stops: Sequence[str]) -> Mapping:
-    response = openai.Completion.create(
-        engine="davinci",
-        prompt=prompt,
-        temperature=0.9,
-        max_tokens=150,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0.6,
-        n=OPTIONS_AMOUNT,
-        logprobs=1,
-        stop=stops,
-    )
-    return response["choices"]
-
-
-def average_logprob(logprobs: Sequence[float]) -> float:
-    return sum(logprobs) / len(logprobs)
-
-
-def sanitize_response(choices: Mapping) -> Sequence[str]:
+def sort_responses(
+    responses: List[GPT3ChatResponse],
+) -> List[GPT3ChatResponse]:
     """Sorts the choices according to the average logprob values of the tokens
-    inside the text. Then makes sure to take only the first line
-    and strip the spaces
-    """
-    sorted_options = sorted(
-        choices, key=lambda x: average_logprob(x["logprobs"]["token_logprobs"])
-    )
-    return [
-        option["text"].strip().split("\n")[0].strip()
-        for option in sorted_options
-    ]
+    inside the text."""
+    return sorted(responses, key=lambda x: x.average_logprob())
 
 
 def format_messages(
@@ -170,7 +129,7 @@ def format_messages(
 
 def fetch_suggestions(
     attributes: PromptAttributes, messages: Sequence[MESSAGE_TYPE]
-) -> Sequence[str]:
+) -> List[GPT3ChatResponse]:
     """Calls openai to receive reply suggestions and santizes the response
     Returns a list of the choices
     """
@@ -181,9 +140,9 @@ def fetch_suggestions(
     print(prompt)
     stops = [attributes.user_name, attributes.match_name]
     stops = ["\n" + stop for stop in stops] + ["\n"]
-    choices = openai_gpt3(prompt, stops)
-    print([choice["text"] for choice in choices])
-    return sanitize_response(choices)
+    choices = gpt3(prompt, stops)
+    print([choice.response for choice in choices])
+    return sort_responses(choices)
 
 
 def client_to_server_sender(
@@ -230,12 +189,14 @@ def lambda_handler(event: Mapping, context):
     security.verify_user_agent(event["requestContext"]["http"]["userAgent"])
     security.verify_captcha(payload["recaptcha_token"])
 
-    openai.api_key = os.environ["OPENAI_API_KEY"]
-
     suggestions = fetch_suggestions(
         PromptAttributes(
             match_name=payload["match_name"], interests=payload["interests"]
         ),
         payload["messages"],
     )
-    return respond(suggestions)
+
+    response = [
+        [suggestion.response, suggestion.is_safe] for suggestion in suggestions
+    ]
+    return respond(response)

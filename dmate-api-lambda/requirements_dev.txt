@@ -1,5 +1,6 @@
 openai
 ua_parser
+environs
 
 black
 mypy
