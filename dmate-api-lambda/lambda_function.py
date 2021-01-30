@@ -3,34 +3,51 @@ import os
 import openai
 from ua_parser import user_agent_parser
 import requests
-from typing import List, Dict, Tuple
+from typing import Iterable, Mapping
+from dataclasses import dataclass
 
 
 PROMPT_FORMAT = (
     "The following is a Tinder conversation "
-    "between a man called {user_name}, and a woman called {match_name}. "
-    "{user_name} is {attributes}. "
+    "between a {user_gender} called {user_name}, "
+    "and a {match_gender} called {match_name}. "
+    "{user_name} is {characteristics}. "
     "{interests}"
     "{goal}"
     "\n###\n{messages}\n{user_name}:"
 )
-GOAL_FORMAT = (
-    "The goal of {user_name} is {user_goal} with {match_name} "
-    "without being too pushy."
-)
+GOAL_FORMAT = "The goal of {user_name} is {user_goal}"
 
 INTERESTS_FORMAT = "{match_name}'s interests include {interests}. "
 SINGLE_INTEREST_FORMAT = "{match_name} is interested in {interests}. "
 
 OPTIONS_AMOUNT = 3
-SERVER_USER_NAME = "Jonathan"
-CLIENT_USER_NAME = "{match_name}"
-USER_ATTRIBUTES = "single, flirty, funny, clever, and kind"
-USER_GOAL = "to get a date"
+
+USER_NAME = "Jonathan"
+USER_GENDER = "man"
+MATCH_NAME = "{match_name}"
+MATCH_GENDER = "woman"
+USER_CHARACTISTICS = "single, flirty, funny, clever, and kind"
+USER_GOAL = "to get a date with {match_name} without being too pushy."
 SET_GOAL = True
 TAIL_EXCHANGES = 4
 
+# Client side params
+CLIENT_SIDE_USER_NAME = "User"
+
 RECAPTCHA_SECRET = "6LdzJTkaAAAAANxLXC81NbBIXfyvsGR_mZCuBhvu"
+
+
+@dataclass(frozen=True)
+class PromptAttributes:
+    user_name: str = USER_NAME
+    user_gender: str = USER_GENDER
+    match_name: str = MATCH_NAME
+    match_gender: str = MATCH_GENDER
+    characteristics: str = USER_CHARACTISTICS
+    set_goal: bool = SET_GOAL
+    user_goal: str = USER_GOAL
+    interests: Iterable[str] = ()
 
 
 class UserAgentVerificationError(Exception):
@@ -41,7 +58,7 @@ class RecaptchaVerificationError(Exception):
     pass
 
 
-def list_of_items_to_grammatical_text(items: List[str]) -> str:
+def list_of_items_to_grammatical_text(items: Iterable[str]) -> str:
     if len(items) <= 1:
         return "".join(items)
     if len(items) == 2:
@@ -50,43 +67,44 @@ def list_of_items_to_grammatical_text(items: List[str]) -> str:
 
 
 def create_prompt(
-    user_name: str,
-    match_name: str,
-    attributes: str,
-    set_goal: bool,
-    user_goal: str,
-    interests: List[str],
-    messages: List[str],
+    attributes: PromptAttributes, messages: Iterable[str]
 ) -> str:
 
     formatted_interests = ""
-    if interests:
-        if len(interests) == 1:
+    if attributes.interests:
+        if len(attributes.interests) == 1:
             interests_format = SINGLE_INTEREST_FORMAT
         else:
             interests_format = INTERESTS_FORMAT
         formatted_interests = interests_format.format(
-            match_name=match_name,
-            interests=list_of_items_to_grammatical_text(interests),
+            match_name=attributes.match_name,
+            interests=list_of_items_to_grammatical_text(attributes.interests),
         )
 
     formatted_goal = ""
-    if set_goal:
+    if attributes.set_goal:
+        user_goal = attributes.user_goal.format(
+            match_name=attributes.match_name
+        )
         formatted_goal = GOAL_FORMAT.format(
-            user_name=user_name, match_name=match_name, user_goal=user_goal
+            user_name=attributes.user_name,
+            match_name=attributes.match_name,
+            user_goal=user_goal,
         )
 
     return PROMPT_FORMAT.format(
-        user_name=user_name,
-        match_name=match_name,
-        attributes=attributes,
+        user_name=attributes.user_name,
+        user_gender=attributes.user_gender,
+        match_name=attributes.match_name,
+        match_gender=attributes.match_gender,
+        characteristics=attributes.characteristics,
         interests=formatted_interests,
         goal=formatted_goal,
         messages="\n".join(messages),
     )
 
 
-def respond(res) -> Dict:
+def respond(res) -> Mapping:
     return {
         "statusCode": "200",
         "body": json.dumps(res),
@@ -96,7 +114,7 @@ def respond(res) -> Dict:
     }
 
 
-def openai_content_filter(prompt: str) -> Dict:
+def openai_content_filter(prompt: str) -> Mapping:
     response = openai.Completion.create(
         engine="content-filter-alpha-c4",
         prompt="<|endoftext|>[{}]\n--\nLabel:".format(prompt),
@@ -109,7 +127,7 @@ def openai_content_filter(prompt: str) -> Dict:
     return response["choices"][0]
 
 
-def openai_gpt3(prompt: str, stops: List[str]) -> Dict:
+def openai_gpt3(prompt: str, stops: Iterable[str]) -> Mapping:
     response = openai.Completion.create(
         engine="davinci",
         prompt=prompt,
@@ -125,11 +143,11 @@ def openai_gpt3(prompt: str, stops: List[str]) -> Dict:
     return response["choices"]
 
 
-def average_logprob(logprobs: List[float]) -> float:
+def average_logprob(logprobs: Iterable[float]) -> float:
     return sum(logprobs) / len(logprobs)
 
 
-def sanitize_response(choices: Dict) -> List[str]:
+def sanitize_response(choices: Mapping) -> Iterable[str]:
     """Sorts the choices according to the average logprob values of the tokens
     inside the text. Then makes sure to take only the first line
     and strip the spaces
@@ -137,45 +155,44 @@ def sanitize_response(choices: Dict) -> List[str]:
     sorted_options = sorted(
         choices, key=lambda x: average_logprob(x["logprobs"]["token_logprobs"])
     )
-    return [option["text"].strip().split("\n")[0].strip() for option in sorted_options]
+    return [
+        option["text"].strip().split("\n")[0].strip()
+        for option in sorted_options
+    ]
 
 
 def fetch_suggestions(
-    user_name: str,
-    match_name: str,
-    attributes: str,
-    set_goal: bool,
-    user_goal: str,
-    interests: List[str],
-    messages: List[Tuple[str, str]],
-) -> List[str]:
+    attributes: PromptAttributes, messages: Iterable
+) -> Iterable[str]:
     """Calls openai to receive reply suggestions and santizes the response
     Returns a list of the choices
     """
     prompt = create_prompt(
-        user_name,
-        match_name,
         attributes,
-        set_goal,
-        user_goal,
-        interests,
-        format_messages(user_name, match_name, messages),
+        format_messages(attributes.user_name, attributes.match_name, messages),
     )
     print(prompt)
-    choices = openai_gpt3(prompt, [user_name, match_name])
+    stops = map(
+        lambda stop: "\n" + stop, [attributes.user_name, attributes.match_name]
+    )
+    choices = openai_gpt3(prompt, stops)
     print([choice["text"] for choice in choices])
     return sanitize_response(choices)
 
 
-def client_to_server_sender(sender: str, user_name: str, match_name: str) -> str:
-    if sender == CLIENT_USER_NAME:
+def client_to_server_sender(
+    sender: str, user_name: str, match_name: str
+) -> str:
+    """Converts the client side user name representation to the server side one
+    E.g. If the client-side sends it as User: convert it to Man: or whatever"""
+    if sender == CLIENT_SIDE_USER_NAME:
         return user_name
     return match_name
 
 
 def format_messages(
-    user_name: str, match_name: str, messages_array: List[Tuple[str, str]]
-) -> List[str]:
+    user_name: str, match_name: str, messages_array: Iterable
+) -> Iterable[str]:
     """Formats the json array received from the client into what openai expects.
     Takes only the last few exchanges in the conversation
     """
@@ -188,10 +205,10 @@ def format_messages(
         sender, message = messages_array[current_message_index]
 
         # Basically track every time a "switch" in the conversation occurs
-        if sender == CLIENT_USER_NAME and not is_user:
+        if sender == CLIENT_SIDE_USER_NAME and not is_user:
             no_of_exchanges += 1
             is_user = True
-        elif sender != CLIENT_USER_NAME and is_user:
+        elif sender != CLIENT_SIDE_USER_NAME and is_user:
             is_user = False
 
         messages.append(
@@ -222,7 +239,7 @@ def verify_captcha(token: str):
         raise RecaptchaVerificationError(token, res)
 
 
-def lambda_handler(event: Dict, context):
+def lambda_handler(event: Mapping, context):
     payload = json.loads(event["body"])
 
     verify_user_agent(event["requestContext"]["http"]["userAgent"])
@@ -231,12 +248,9 @@ def lambda_handler(event: Dict, context):
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
     suggestions = fetch_suggestions(
-        SERVER_USER_NAME,
-        payload["match_name"],
-        USER_ATTRIBUTES,
-        SET_GOAL,
-        USER_GOAL,
-        payload["match_interests"],
+        PromptAttributes(
+            match_name=payload["match_name"], interests=payload["interests"]
+        ),
         payload["messages"],
     )
     return respond(suggestions)
