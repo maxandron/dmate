@@ -168,6 +168,7 @@ def fetch_suggestions(
     """Calls openai to receive reply suggestions and santizes the response
     Returns a list of the choices
     """
+    print(attributes)
     prompt = create_prompt(
         attributes,
         format_messages(attributes.user_name, attributes.match_name, messages),
@@ -241,6 +242,7 @@ def verify_captcha(token: str):
 
 def lambda_handler(event: Mapping, context):
     payload = json.loads(event["body"])
+    interests = payload["interest"] if "interests" in payload else []
 
     verify_user_agent(event["requestContext"]["http"]["userAgent"])
     verify_captcha(payload["recaptcha_token"])
@@ -249,8 +251,7 @@ def lambda_handler(event: Mapping, context):
 
     suggestions = fetch_suggestions(
         PromptAttributes(
-            match_name=payload["match_name"], interests=payload["interests"]
-        ),
-        payload["messages"],
+            match_name=payload["match_name"], interests=interests
+        ), payload["messages"],
     )
     return respond(suggestions)

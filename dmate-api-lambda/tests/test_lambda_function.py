@@ -3,6 +3,7 @@ import lambda_function
 
 def test_fetch_suggestions():
     # Arange
+    payload = json.loads(event["body"])
     USER_NAME = "User"
     MATCH_NAME = "Nadz"
     MATCH_INTERESTS = []
