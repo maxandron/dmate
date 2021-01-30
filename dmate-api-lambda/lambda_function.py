@@ -1,10 +1,10 @@
 import json
 import os
 import openai
-from ua_parser import user_agent_parser
-import requests
 from typing import Sequence, Mapping, Tuple, List
 from dataclasses import dataclass
+
+import security
 
 
 PROMPT_FORMAT = (
@@ -35,8 +35,6 @@ TAIL_EXCHANGES = 4
 # Client side params
 CLIENT_SIDE_USER_NAME = "User"
 
-RECAPTCHA_SECRET = "6LdzJTkaAAAAANxLXC81NbBIXfyvsGR_mZCuBhvu"
-
 
 MESSAGE_TYPE = Sequence[Tuple[str, str]]
 
@@ -53,14 +51,6 @@ class PromptAttributes:
     interests: Sequence[str] = ()
 
 
-class UserAgentVerificationError(Exception):
-    pass
-
-
-class RecaptchaVerificationError(Exception):
-    pass
-
-
 def list_of_items_to_grammatical_text(items: Sequence[str]) -> str:
     if len(items) <= 1:
         return "".join(items)
@@ -69,7 +59,9 @@ def list_of_items_to_grammatical_text(items: Sequence[str]) -> str:
     return "{}, and {}".format(", ".join(items[:-1]), items[-1])
 
 
-def create_prompt(attributes: PromptAttributes, messages: Sequence[str]) -> str:
+def create_prompt(
+    attributes: PromptAttributes, messages: Sequence[str]
+) -> str:
 
     formatted_interests = ""
     if attributes.interests:
@@ -230,34 +222,20 @@ def extract_last_messages(messages_array: Sequence) -> List[Tuple[str, str]]:
     return messages
 
 
-def verify_user_agent(user_agent: str):
-    if user_agent_parser.Parse(user_agent)["user_agent"]["family"] != "Chrome":
-        raise UserAgentVerificationError(
-            "User agent '{}' failed verification".format(user_agent)
-        )
-
-
-def verify_captcha(token: str):
-    res = requests.post(
-        "https://www.google.com/recaptcha/api/siteverify",
-        {"secret": RECAPTCHA_SECRET, "response": token},
-    ).json()
-    print(res)
-    if not res["success"] or res["score"] < 0.5:
-        raise RecaptchaVerificationError(token, res)
-
-
 def lambda_handler(event: Mapping, context):
-    payload = json.loads(event["body"])
-    interests = payload["interest"] if "interests" in payload else []
 
-    verify_user_agent(event["requestContext"]["http"]["userAgent"])
-    verify_captcha(payload["recaptcha_token"])
+    payload = security.verify_request_data(event)
+    payload = security.secure_user_input(payload)
+
+    security.verify_user_agent(event["requestContext"]["http"]["userAgent"])
+    security.verify_captcha(payload["recaptcha_token"])
 
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
     suggestions = fetch_suggestions(
-        PromptAttributes(match_name=payload["match_name"], interests=interests),
+        PromptAttributes(
+            match_name=payload["match_name"], interests=payload["interests"]
+        ),
         payload["messages"],
     )
     return respond(suggestions)
