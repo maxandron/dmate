@@ -188,7 +188,7 @@ def fetch_suggestions(
     )
     print(prompt)
     stops = [attributes.user_name, attributes.match_name]
-    stops = ["\n" + stop for stop in stops] + ["/n"]
+    stops = ["\n" + stop for stop in stops] + ["\n"]
     choices = openai_gpt3(prompt, stops)
     print([choice["text"] for choice in choices])
     return sanitize_response(choices)
