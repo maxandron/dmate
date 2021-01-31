@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Sequence, Mapping, List
+from typing import Sequence, List
 import openai
 import config
 
