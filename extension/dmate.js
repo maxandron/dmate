@@ -64,12 +64,12 @@ function getConversationMessage() {
     return orderedMessages;
 }
 
-function changeThinkingSentece(){
+function changeThinkingSentece() {
     // Get current sentence and style
     let currentSentenceElement = document.getElementById("thinking-sentencte");
     let currentSentence = currentSentenceElement.value;
     let currentStyle = document.getElementById("loading_style");
-    
+
     // Generate new sentence
     let newSentence = THIKNING_SENTENCES[Math.floor(Math.random() * THIKNING_SENTENCES.length)];
     let newStyle = currentStyle.innerHTML.split(currentSentence).join(newSentence);
@@ -95,7 +95,7 @@ function getNewIdeaClick() {
     newIdeaButon.disabled = true;
     newIdeaButon.classList.remove("new-idea-active");
 
-    getRecaptchaToken(function(token) {
+    getRecaptchaToken(function (token) {
         // Get data
         // console.log(JSON.parse(localStorage.getItem('currentMatchInterests')))
         let payload = {
@@ -122,7 +122,7 @@ function getNewIdeaClick() {
 
 }
 
-function getRecaptchaToken(callback){
+function getRecaptchaToken(callback) {
     let token = "none";
     token = document.getElementById('recaptchaToken').value;
     if (token != "none") {
@@ -144,10 +144,11 @@ function setIdeas(ideas) {
     }
 
     // Add new options
+    // Idea is a a dict with keys like message and is_safe
     ideas.forEach(function (idea) {
         var option = document.createElement("option");
-        option.text = idea;
-        option.value = idea;
+        option.text = idea['message'];
+        option.value = idea['message'];
         ideasBox.add(option);
     });
 
@@ -250,11 +251,11 @@ waitForEl(function () {
             var reCaptchaLoad = document.createElement('script');
             reCaptchaLoad.type = 'text/javascript';
             reCaptchaLoad.text = "grecaptcha.ready(function(){grecaptcha.execute('" + RECAPTCHA_KEY + "', {action: 'submit'}).then(function(token) {document.getElementById('recaptchaToken').value = token;});});";
-            reCaptchaLoad.onload = function() {
+            reCaptchaLoad.onload = function () {
                 this.parentNode.removeChild(this);
             };
             (document.head || document.documentElement).appendChild(reCaptchaLoad);
-            
+
             getNewIdeaClick();
         };
 
