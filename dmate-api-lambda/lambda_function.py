@@ -57,9 +57,7 @@ def list_of_items_to_grammatical_text(items: Sequence[str]) -> str:
     return "{}, and {}".format(", ".join(items[:-1]), items[-1])
 
 
-def create_prompt(
-    attributes: PromptAttributes, messages: Sequence[str]
-) -> str:
+def create_prompt(attributes: PromptAttributes, messages: Sequence[str]) -> str:
 
     formatted_interests = ""
     if attributes.interests:
@@ -197,6 +195,7 @@ def lambda_handler(event: Mapping, context):
     )
 
     response = [
-        [suggestion.response, suggestion.is_safe] for suggestion in suggestions
+        {"message": suggestion.response, "is_safe": suggestion.is_safe}
+        for suggestion in suggestions
     ]
     return respond(response)

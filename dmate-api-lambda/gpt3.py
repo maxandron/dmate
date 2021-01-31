@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Sequence, Mapping, List
+from typing import Sequence, List
 import openai
 import config
 
@@ -17,7 +17,7 @@ class GPT3ChatResponse:
         return sum(self.token_logprobs) / len(self.token_logprobs)
 
 
-def _content_filter(prompt: str) -> Mapping:
+def _content_filter(prompt: str) -> str:
     response = openai.Completion.create(
         engine="content-filter-alpha-c4",
         prompt="<|endoftext|>[{}]\n--\nLabel:".format(prompt),
@@ -47,7 +47,7 @@ def gpt3(prompt: str, stops: Sequence[str]) -> List[GPT3ChatResponse]:
         GPT3ChatResponse(
             response=choice["text"],
             token_logprobs=choice["logprobs"]["token_logprobs"],
-            is_safe=_content_filter(choice["text"]) == 0
+            is_safe=int(_content_filter(choice["text"])) == 0,
         )
         for choice in response["choices"]
     ]

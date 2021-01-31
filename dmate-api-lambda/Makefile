@@ -15,4 +15,4 @@ clean:
 	rm -rf ./build/*
 
 test:
-	python -m pytest
+	OPENAI_API_KEY="" python -m pytest
