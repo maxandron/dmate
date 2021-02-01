@@ -1,16 +1,9 @@
 import pytest
+from security import (BodyNotJsonError, MaliciousInterestError,
+                      MaliciousMatchNameError, MaliciousMessagesError,
+                      NoBodyError, NoMatchNameError, NoMessagesError)
 
-from security import (
-    NoBodyError,
-    BodyNotJsonError,
-    NoMessagesError,
-    NoMatchNameError,
-    MaliciousMatchNameError,
-    MaliciousMessagesError,
-    MaliciousInterestError,
-)
 import lambda_function
-
 
 # def test_fetch_suggestions():
 #     # Arange
