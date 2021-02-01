@@ -1,8 +1,13 @@
-from dataclasses import dataclass
-from typing import Sequence, List
-import openai
-import config
+"""
+This module houses only the core interactions with gpt3
+"""
 
+from dataclasses import dataclass
+from typing import List, Mapping, Sequence, cast
+
+import openai
+
+from dmate import config
 
 openai.api_key = config.OPENAI_API_KEY
 
@@ -26,6 +31,7 @@ def _content_filter(prompt: str) -> str:
         top_p=0,
         logprobs=3,
     )
+    response = cast(Mapping, response)
     return response["choices"][0]["text"]
 
 
@@ -42,6 +48,7 @@ def gpt3(prompt: str, stops: Sequence[str]) -> List[GPT3ChatResponse]:
         logprobs=1,
         stop=stops,
     )
+    response = cast(Mapping, response)
 
     return [
         GPT3ChatResponse(

@@ -2,7 +2,7 @@
 
 build: clean
 	venv/bin/pip install --target build/requirements -r requirements_prod.txt
-	zip -g ./build/package.zip ./*.py
+	zip -g build/package.zip lambda_function.py -r dmate
 	cd build/requirements && zip -r ../package.zip .
 
 deploy: build

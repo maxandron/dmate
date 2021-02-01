@@ -1,5 +1,11 @@
-import requests
+"""
+This module houses all security related things
+Mainly used to ensure a safe input
+"""
+
 import json
+
+import requests
 from ua_parser import user_agent_parser
 
 CAPTCHA_URI = "https://www.google.com/recaptcha/api/siteverify"
@@ -66,18 +72,14 @@ def search_for_malicious_input(payload):
             )
     if "\n" in payload["match_name"]:
         raise MaliciousMatchNameError(
-            "Found malicious input in match_name: {}".format(
-                payload["match_name"]
-            )
+            "Found malicious input in match_name: {}".format(payload["match_name"])
         )
 
 
 def secure_the_messages(messages):
 
     if not isinstance(messages, list):
-        raise MaliciousMessagesError(
-            "Found malicious messages: {}".format(messages)
-        )
+        raise MaliciousMessagesError("Found malicious messages: {}".format(messages))
 
     secured_messages = []
     for message in messages:
