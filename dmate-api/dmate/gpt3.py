@@ -36,11 +36,13 @@ def _content_filter(prompt: str) -> str:
     return response["choices"][0]["text"]
 
 
+
 def _remove_bad_words(response: str) -> str:
     input_set = set(response.split())
     for bad_word in input_set.intersection(BAD_WORDS):
         response = response.replace(bad_word, "*" * len(bad_word))
     return response
+
 
 
 def gpt3(prompt: str, stops: Sequence[str]) -> List[GPT3ChatResponse]:
