@@ -16,6 +16,10 @@ class UserAgentVerificationError(Exception):
     pass
 
 
+class NoUserAgentError(Exception):
+    pass
+
+
 class NoBodyError(Exception):
     pass
 
@@ -48,6 +52,10 @@ class RecaptchaVerificationError(Exception):
     pass
 
 
+class RecaptchaNotSentError(Exception):
+    pass
+
+
 def sanitize_prompt_injections(input):
     return input.replace("\n", ". ")
 
@@ -72,14 +80,18 @@ def search_for_malicious_input(payload):
             )
     if "\n" in payload["match_name"]:
         raise MaliciousMatchNameError(
-            "Found malicious input in match_name: {}".format(payload["match_name"])
+            "Found malicious input in match_name: {}".format(
+                payload["match_name"]
+            )
         )
 
 
 def secure_the_messages(messages):
 
     if not isinstance(messages, list):
-        raise MaliciousMessagesError("Found malicious messages: {}".format(messages))
+        raise MaliciousMessagesError(
+            "Found malicious messages: {}".format(messages)
+        )
 
     secured_messages = []
     for message in messages:
@@ -101,11 +113,29 @@ def verify_request_data(event):
             raise BodyNotJsonError(
                 "The body {} is not in a JSON format".format(event["body"])
             )
-        return body
     except json.decoder.JSONDecodeError:
         raise BodyNotJsonError(
             "The body {} is not in a JSON format".format(event["body"])
         )
+
+    # Check user-agent
+    try:
+        user_agent = event["requestContext"]["http"]["userAgent"]
+        verify_user_agent(user_agent)
+    except KeyError:
+        raise NoUserAgentError(
+            "User agent was not sent in event: {}".format(event)
+        )
+
+    # Check captcha
+    try:
+        verify_captcha(body["recaptcha_token"])
+    except KeyError:
+        raise RecaptchaNotSentError(
+            "Didn't get recaptcha token in request: {}".format(body)
+        )
+
+    return body
 
 
 def secure_user_input(payload):

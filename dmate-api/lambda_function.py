@@ -21,9 +21,6 @@ def lambda_handler(event: Mapping, context):
     payload = security.verify_request_data(event)
     payload = security.secure_user_input(payload)
 
-    security.verify_user_agent(event["requestContext"]["http"]["userAgent"])
-    security.verify_captcha(payload["recaptcha_token"])
-
     # Main dmate logic starts with this call
     suggestions = fetch_suggestions(
         PromptAttributes(
