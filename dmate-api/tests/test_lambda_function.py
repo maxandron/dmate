@@ -1,8 +1,14 @@
 import pytest
-from security import (BodyNotJsonError, MaliciousInterestError,
-                      MaliciousMatchNameError, MaliciousMessagesError,
-                      NoBodyError, NoMatchNameError, NoMessagesError)
 
+from dmate.security import (
+    BodyNotJsonError,
+    MaliciousInterestError,
+    MaliciousMatchNameError,
+    MaliciousMessagesError,
+    NoBodyError,
+    NoMatchNameError,
+    NoMessagesError,
+)
 import lambda_function
 
 # def test_fetch_suggestions():
