@@ -8,6 +8,7 @@ from typing import List, Mapping, Sequence, cast
 import openai
 
 from dmate import config
+from dmate.consts import BAD_WORDS
 
 openai.api_key = config.OPENAI_API_KEY
 
@@ -35,6 +36,15 @@ def _content_filter(prompt: str) -> str:
     return response["choices"][0]["text"]
 
 
+
+def _remove_bad_words(response: str) -> str:
+    input_set = set(response.split())
+    for bad_word in input_set.intersection(BAD_WORDS):
+        response = response.replace(bad_word, "*" * len(bad_word))
+    return response
+
+
+
 def gpt3(prompt: str, stops: Sequence[str]) -> List[GPT3ChatResponse]:
     response = openai.Completion.create(
         engine="davinci",
@@ -50,9 +60,10 @@ def gpt3(prompt: str, stops: Sequence[str]) -> List[GPT3ChatResponse]:
     )
     response = cast(Mapping, response)
 
+    # For each response remove bad words and check if its safe with the filter
     return [
         GPT3ChatResponse(
-            response=choice["text"],
+            response=_remove_bad_words(choice["text"]),
             token_logprobs=choice["logprobs"]["token_logprobs"],
             is_safe=int(_content_filter(choice["text"])) == 0,
         )

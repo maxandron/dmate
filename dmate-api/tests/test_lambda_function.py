@@ -1,5 +1,6 @@
 import pytest
 import requests
+
 from dmate.security import (
     BodyNotJsonError,
     MaliciousInterestError,
