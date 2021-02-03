@@ -1,6 +1,6 @@
 {
     "python.formatting.provider": "black",
-    "python.pythonPath": "/Users/jonathanshahak/privateprojects/dmate/venv/bin/python3",
+    "python.pythonPath": "dmate-api/venv/bin/python",
     "python.linting.pylintEnabled": false,
     "python.linting.mypyEnabled": true,
     "python.linting.flake8Enabled": true,

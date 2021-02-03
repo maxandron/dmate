@@ -85,6 +85,9 @@ function getNewIdeaClick() {
     document.getElementById('loader-text').style.display = "inline-block";
     document.getElementById('ideas-block').style.display = "none";
 
+    // Switch logo to normal
+    swtichLogo("normal");
+
     // Change pick button
     let sendButon = document.getElementById('dmate-send-button')
     sendButon.disabled = true;
@@ -109,15 +112,14 @@ function getNewIdeaClick() {
 
         console.log(payload);
 
-        chrome.runtime.sendMessage(
-            {
-                contentScriptQuery: 'dmateGenerate',
-                data: JSON.stringify(payload),
-            }, function (response) {
-                console.log(response);
-                changeThinkingSentece();
-                setIdeas(response);
-            });
+        chrome.runtime.sendMessage({
+            contentScriptQuery: 'dmateGenerate',
+            data: JSON.stringify(payload),
+        }, function (response) {
+            console.log(response);
+            changeThinkingSentece();
+            setIdeas(response);
+        });
     });
 
 }
@@ -134,6 +136,20 @@ function getRecaptchaToken(callback) {
     }
 }
 
+// Change logo from noraml to alert mode and vice versa
+function swtichLogo(changeTo = "normal") {
+    var logoAlert = document.getElementById('logo-alert');
+    var logoNormal = document.getElementById('logo-normal');
+
+    if (changeTo == "normal") {
+        logoAlert.style.display = "none";
+        logoNormal.style.display = "inline-block";
+    } else {
+        logoAlert.style.display = "inline-block";
+        logoNormal.style.display = "none";
+    }
+}
+
 function setIdeas(ideas) {
 
     // Remove current option
@@ -143,6 +159,7 @@ function setIdeas(ideas) {
         ideasBox.options[i] = null;
     }
 
+    let safeResults = true;
     // Add new options
     // Idea is a a dict with keys like message and is_safe
     ideas.forEach(function (idea) {
@@ -150,6 +167,11 @@ function setIdeas(ideas) {
         option.text = idea['message'];
         option.value = idea['message'];
         ideasBox.add(option);
+
+        // If we have one unsafe result, change the safeResults flag
+        if (!idea['is_safe']) {
+            safeResults = false;
+        }
     });
 
     // Disaply selectbox
@@ -165,6 +187,11 @@ function setIdeas(ideas) {
     var newIdeaButon = document.getElementById('dmate-new-idea')
     newIdeaButon.disabled = false;
     newIdeaButon.classList.add("new-idea-active");
+
+    // Activate unsafe results logo
+    if (!safeResults) {
+        swtichLogo("alert");
+    }
 }
 
 function sendClick() {
@@ -214,8 +241,7 @@ function mainFlow() {
     setTimeout(function () {
         try {
             getInitialData()
-        }
-        catch (err) {
+        } catch (err) {
             console.log(err)
             setTimeout(function () {
                 getInitialData()
@@ -240,7 +266,7 @@ waitForEl(function () {
     if (!document.getElementById("dmate")) {
         mainFlow();
 
-        // Send button was clicked
+        // Pick button was clicked
         document.getElementById('dmate-send-button').onclick = function () {
             sendClick();
         };
@@ -261,6 +287,3 @@ waitForEl(function () {
 
     }
 });
-
-
-
