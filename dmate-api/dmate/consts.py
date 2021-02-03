@@ -27,6 +27,7 @@ USER_CHARACTISTICS = "single, flirty, funny, clever, and kind"
 USER_GOAL = "to get a date with {match_name} without being too pushy."
 SET_GOAL = True
 TAIL_EXCHANGES = 4
+MAX_MESSAGE_LENGTH = 350
 
 # Client side params
 CLIENT_SIDE_USER_NAME = "User"
