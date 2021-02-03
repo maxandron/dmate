@@ -5,7 +5,11 @@ Given a secure input the fetch_suggestions function will produce responses
 
 from typing import List, Sequence, Tuple
 
-from dmate.consts import CLIENT_SIDE_USER_NAME, TAIL_EXCHANGES
+from dmate.consts import (
+    CLIENT_SIDE_USER_NAME,
+    TAIL_EXCHANGES,
+    MAX_MESSAGE_LENGTH,
+)
 from dmate.gpt3 import GPT3ChatResponse, gpt3
 from dmate.prompt import PromptAttributes, create_prompt
 
@@ -31,10 +35,13 @@ def _format_messages(
             message,
         )
         for sender, message in messages
+        if len(message) <= MAX_MESSAGE_LENGTH
     ]
 
 
-def _client_to_server_sender(sender: str, user_name: str, match_name: str) -> str:
+def _client_to_server_sender(
+    sender: str, user_name: str, match_name: str
+) -> str:
     """Converts the client side user name representation to the server side one
     E.g. If the client-side sends it as User: convert it to Man: or whatever"""
     if sender == CLIENT_SIDE_USER_NAME:
@@ -75,7 +82,9 @@ def fetch_suggestions(
     Returns a list of the choices
     """
     last_messages = _extract_last_messages(messages)
-    prompt = create_prompt(attributes, _format_messages(attributes, last_messages))
+    prompt = create_prompt(
+        attributes, _format_messages(attributes, last_messages)
+    )
     print(prompt)
     stops = [attributes.user_name, attributes.match_name]
     stops = ["\n" + stop for stop in stops] + ["\n"]
