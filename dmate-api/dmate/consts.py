@@ -3,6 +3,7 @@ All constants will go here.
 Don't confuse with config which will house
 more dynamic constants that can be changed via environment variables
 """
+from enum import Enum
 
 PROMPT_FORMAT = (
     "The following is a Tinder conversation "
@@ -483,3 +484,59 @@ BAD_WORDS = {
     "yed",
     "zabourah",
 }
+
+# A list potential conversation openers
+# Last Update: 4.2.2021
+CONVERSATION_OPENERS = {
+    "Hi": [
+        "Hi, How is your day going?",
+        "Hey HEYY heyy, {match_name}!!!",
+        "Hello beautiful stranger :)",
+    ],
+    "Statements": [
+        "Prrrrr",
+        "Hello",
+        "{match_name}, you seem to have good taste ;)",
+        "Yesss, Another match! Who are you?",
+        "To celebrate our match, I wanted to buy you a helium balloon.. To take the conversation to the moon",
+        "Country road → [Take me home] → Well, if you insist ;)",
+        "So, I’m actually here from the future, where we’ve been married for ten years, I’m just here to resolve an argument over when and where our first date was.",
+    ],
+    "Funny Facts": [
+        "Did you know that a group of baboons is called a congress",
+        "Did you know that hunting unicorns are legal in Michigan",
+        "Did you know that cows moo with regional accents",
+    ],
+    "Questions": [
+        "haha oh shit! not sure if you remember",
+        "Hey {match_name}, you know what’s interesting about your pictures?",
+        "When life gives you {match_name}, make lemonade :lemon:",
+        "rosé or Champagne?",
+        "Dogs or cats?",
+        "Hi! I hope this question is not too personal, I just really have to ask it.What is your favorite shape of Pasta?",
+        "Hey {match_name}! what are your Sunday priorities? Yoga, Netflix, or dancing?",
+        "Hey {match_name}! Truth or Dare?",
+        "Hi {match_name}, when our friends ask how we met, what do we tell them?",
+        "Tell me.. What’s your favorite food?",
+        "Tell me {match_name}, What are the things in life you are most proud of?",
+        "Hey, wanna steal my comfiest hoodie?",
+        "What’s the difference between me and my couch?",
+        "Pancakes or Waffles?",
+        "{match_name}, I’m headed to the supermarket in 10, Do you need something?",
+    ],
+    "Risky": [
+        "Hi, stalker :rainbow:",
+        "How many men can participate in a gang bang before it’s considered gay? Asking for a friend",
+        "Sup dude.",
+        "{match_name}, I’ve got bad news for you…",
+        "Bot check: say potato",
+        "Let's be illiterate together",
+        "I’m really jealous of your heart because it’s pumping inside you right now and I’m not",
+    ],
+}
+
+
+class ConvState(Enum):
+    NEW = 1
+    ONGOING = 2
+    DEAD = 3

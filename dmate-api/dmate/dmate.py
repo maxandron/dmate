@@ -9,9 +9,13 @@ from dmate.consts import (
     CLIENT_SIDE_USER_NAME,
     TAIL_EXCHANGES,
     MAX_MESSAGES_LENGTH,
+    ConvState,
 )
 from dmate.gpt3 import GPT3ChatResponse, gpt3
 from dmate.prompt import PromptAttributes, create_prompt
+from dmate.conversation_state import detect_conversation_state
+from dmate.opener import get_random_openers
+
 
 MESSAGE_TYPE = Sequence[Tuple[str, str]]
 
@@ -24,7 +28,9 @@ def _sort_responses(
     return sorted(responses, key=lambda x: x.average_logprob())
 
 
-def _remove_long_messages(messages: List[Tuple[str, str]]) -> List[str]:
+def _remove_long_messages(
+    messages: List[Tuple[str, str]]
+) -> List[Tuple[str, str]]:
     """Remove longest messages until total messsages
     length is less than MAX_MESSAGES_LENGTH"""
 
@@ -116,6 +122,19 @@ def fetch_suggestions(
     """Calls openai to receive reply suggestions and santizes the response
     Returns a list of the choices
     """
+
+    conversation_state = detect_conversation_state(messages)
+
+    if conversation_state == ConvState.NEW:
+        print(
+            "The conversation between {} to {} is new, therefore, sending premade openers.".format(
+                attributes.user_name, attributes.match_name
+            )
+        )
+        openers = get_random_openers(attributes.match_name)
+        print(openers)
+        return openers
+
     last_messages = _extract_last_messages(messages)
     prompt = create_prompt(
         attributes, _format_messages(attributes, last_messages)
