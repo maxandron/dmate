@@ -8,7 +8,7 @@ from typing import List, Sequence, Tuple
 from dmate.consts import (
     CLIENT_SIDE_USER_NAME,
     TAIL_EXCHANGES,
-    MAX_MESSAGE_LENGTH,
+    MAX_MESSAGES_LENGTH,
 )
 from dmate.gpt3 import GPT3ChatResponse, gpt3
 from dmate.prompt import PromptAttributes, create_prompt
@@ -24,9 +24,45 @@ def _sort_responses(
     return sorted(responses, key=lambda x: x.average_logprob())
 
 
+def _remove_long_messages(messages: List[Tuple[str, str]]) -> List[str]:
+    """Remove longest messages until total messsages
+    length is less than MAX_MESSAGES_LENGTH"""
+
+    # Initial summary of all messages length's in order to check even if we
+    # need to get into the while loop
+    total_messages_length = sum(len(message) for sender, message in messages)
+
+    # Loop until total length is shorter than MAX_MESSAGES_LENGTH
+    while total_messages_length > MAX_MESSAGES_LENGTH:
+        total_messages_length = 0
+
+        for message_obj in messages:
+            longest_message_obj = None
+            longest_message_length = 0
+
+            message = message_obj[1]  # [0] --> Sender, [1] --> Message
+            message_length = len(message)
+
+            total_messages_length += message_length
+
+            # Check if the current message is the longest one
+            if message_length > longest_message_length:
+                longest_message_length = message_length
+                longest_message_obj = message_obj
+
+        # Remove longest message, and reduce it's length from the total messages length
+        messages.remove(longest_message_obj)
+        total_messages_length -= longest_message_length
+
+    return messages
+
+
 def _format_messages(
     attributes: PromptAttributes, messages: List[Tuple[str, str]]
 ) -> List[str]:
+
+    messages = _remove_long_messages(messages)
+
     return [
         "{}: {}".format(
             _client_to_server_sender(
@@ -35,7 +71,6 @@ def _format_messages(
             message,
         )
         for sender, message in messages
-        if len(message) <= MAX_MESSAGE_LENGTH
     ]
 
 
